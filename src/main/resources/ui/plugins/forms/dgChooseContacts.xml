@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<dialog name="pnFormChooseContacts" closable="true" bottom="5" close="removeDialog(this)" columns="3" font="bold" gap="5" icon="/icons/form_send.png" left="5" modal="true" right="5" text="i18n.forms.send.title" top="5">
+    <panel bottom="5" columns="1" gap="10" left="5" right="5" top="5">
+    	<label text="i18n.forms.send.choosecontacts"/>
+		<list name="lsContacts" weightx="1" weighty="1" >
+			<popupmenu>
+				<menuitem text="remove" action="removeSelected(lsContacts)"/>
+			</popupmenu>
+		</list>
+        <panel colspan="2" gap="5" halign="center">
+            <button action="sendForm(pnFormChooseContacts)" halign="right" icon="/icons/export.png" text="i18n.common.send"/>
+            <button action="removeDialog(pnFormChooseContacts)" halign="right" icon="/icons/cross.png" text="i18n.action.cancel"/>
+        </panel>
+    </panel>
+</dialog>
