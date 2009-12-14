@@ -63,12 +63,24 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
 			</extension>
 		</extensions>
 	</build>
@@ -84,6 +96,7 @@
 			<groupId>com.masabi.frontlinesms.plugins</groupId>
 			<artifactId>masabi-frontlinesms-plugin-formscodec</artifactId>
 			<version>0.02.00</version>
+			<!-- This is actually only required at runtime, but is included in the compile scope to ensure that other projects will pick up this jar -->
 		</dependency>
 		
 		<dependency>
