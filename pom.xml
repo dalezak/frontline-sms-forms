@@ -3,7 +3,7 @@
 	<groupId>net.frontlinesms.plugins</groupId>
 	<artifactId>frontlinesms-plugin-forms</artifactId>
 	<name>FrontlineSMS Forms plugin</name>
-	<version>0.02.00</version>
+	<version>0.02.01</version>
 	<description>FrontlineForms plugin for FrontlineSMS</description>
 	<licenses>
 		<license>
@@ -78,6 +78,12 @@
 			<groupId>net.frontlinesms.core</groupId>
 			<artifactId>frontlinesms</artifactId>
 			<version>1.6.07</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.masabi.frontlinesms.plugins</groupId>
+			<artifactId>masabi-frontlinesms-plugin-formscodec</artifactId>
+			<version>0.02.00</version>
 		</dependency>
 		
 		<dependency>
