@@ -42,8 +42,6 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	/** XML file containing dialog for choosing which contacts to send a form to */
 	private static final String XML_CHOOSE_CONTACTS = "/ui/plugins/forms/dgChooseContacts.xml";
 	
-	/** The name of the Forms tab */
-	private static final String TAB_FORMS = ":forms";
 	/** Component name of the forms list */
 	private static final String FORMS_LIST_COMPONENT_NAME = "formsList";
 	
@@ -98,7 +96,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	
 	/** The thinlet component containing the tab. */
 	private Object tabComponent;
-	
+
 	// FIXME work out what this is here for
 	private Object formResultsComponent;
 	/** DAO for {@link Contact}s */
@@ -140,9 +138,22 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		if(newSelectedItem != null) {
 			this.uiController.setSelectedItem(formList, newSelectedItem);
 		}
+
+		// We should enable or disable buttons as appropriate
+		formsList_selectionChanged();
 	}
 	
 //> PASS-THROUGH METHODS TO UI CONTROLLER
+	/** @return the named ui component in the current tab, or <code>null</code> if none could be found. */
+	private Object find(String componentName) {
+		return this.uiController.find(this.tabComponent, componentName);
+	}
+	
+	/** @return the forms tab component. */
+	private Object getFormsTab() {
+		return this.tabComponent;
+	}
+	
 	/** @see UiGeneratorController#showHelpPage(String) */
 	public void showHelpPage(String page) {
 		uiController.showHelpPage(page);
@@ -191,8 +202,8 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 * Called when the user has selected a different item on the forms tree.
 	 * @param formsList
 	 */
-	public void formsTab_selectionChanged(Object formsList) {
-		Form selectedForm = getForm(uiController.getSelectedItem(formsList));
+	public void formsList_selectionChanged() {
+		Form selectedForm = getForm(uiController.getSelectedItem(getFormsList()));
 		
 		if (selectedForm != null) {
 			if (selectedForm.isFinalised()) {
@@ -200,41 +211,36 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 			}
 		} else {
 			//Nothing selected
-			Object formsTab = uiController.getCurrentTab();
-			Object pnRight = uiController.find(formsTab, "pnRight");
+			Object pnRight = find("pnRight");
 			uiController.removeAll(pnRight);
 		}
-		formsTab_enabledFields(null, formsList, uiController.find(uiController.getParent(formsList), "toolbar"));
+		formsTab_enabledFields();
 	}
 	
 	/**
 	 * Show the GUI to edit a form.
 	 * @param list Reference to the Forms tree object.
 	 */
-	public void editSelected(Object list) {
-		Object selectedComponent = uiController.getSelectedItem(list);
-		if (selectedComponent != null) {
-			Form f = getForm(selectedComponent);
-			VisualForm visualForm = VisualForm.getVisualForm(f);
+	public void formsList_editSelected() {
+		Form selectedForm = getSelectedForm();
+		if (selectedForm != null) {
+			VisualForm visualForm = VisualForm.getVisualForm(selectedForm);
 			List<PreviewComponent> old = new ArrayList<PreviewComponent>();
 			old.addAll(visualForm.getComponents());
 			visualForm = FormsUiController.getInstance().showFormsEditor(uiController.getFrameLauncher(), visualForm);
 			if (visualForm != null) {
-				if (!visualForm.getName().equals(f.getName())) {
-					f.setName(visualForm.getName());
+				if (!visualForm.getName().equals(selectedForm.getName())) {
+					selectedForm.setName(visualForm.getName());
 				}
-				updateForm(old, visualForm.getComponents(), f);
-				formsTab_selectionChanged(list);
+				updateForm(old, visualForm.getComponents(), selectedForm);
+				formsList_selectionChanged();
 			}
 		}
 	}
 	
-	/**
-	 * Shows a selecter for assigning a {@link Group} to a {@link Form}
-	 * @param formsList
-	 */
-	public void showGroupSelecter(Object formsList) {
-		Form selectedForm = getForm(uiController.getSelectedItem(formsList));
+	/** Shows a selecter for assigning a {@link Group} to a {@link Form} */
+	public void formsList_showGroupSelecter() {
+		Form selectedForm = getSelectedForm();
 		LOG.info("FormsThinletTabController.showGroupSelecter() : " + selectedForm);
 		if(selectedForm != null) {
 			// FIXME i18n
@@ -265,8 +271,8 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 * Attempt to send the form selected in the forms list
 	 * @param formsList the forms list component
 	 */
-	public void sendSelected(Object formsList) {
-		Form selectedForm = getForm(uiController.getSelectedItem(formsList));
+	public void formsList_sendSelected() {
+		Form selectedForm = getSelectedForm();
 		if(selectedForm != null) {
 			// check the form has a group set
 			if(selectedForm.getPermittedGroup() == null) {
@@ -290,7 +296,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	public void showSendSelectionDialog() {
 		uiController.removeConfirmationDialog();
 		
-		Form form = getForm(formsList_getSelection());
+		Form form = getSelectedForm();
 		if(form != null) {
 			// if form is not finalised, finalise it now
 			if(!form.isFinalised()) {
@@ -349,10 +355,8 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	}
 	
 	/** Finds the forms list and deletes the selected item. */
-	public void deleteSelected() {
-		Object formsList = uiController.find(FORMS_LIST_COMPONENT_NAME);
-		Object selectedComponent = uiController.getSelectedItem(formsList);
-		Form selectedForm = getForm(selectedComponent);
+	public void formsList_deleteSelected() {
+		Form selectedForm = getSelectedForm();
 		if(selectedForm != null) {
 			this.formsDao.deleteForm(selectedForm);
 		}
@@ -365,8 +369,10 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 * Duplicates the selected form.
 	 * @param formsList
 	 */
-	public void duplicateSelected(Object formsList) {
-		Form selected = getForm(uiController.getSelectedItem(formsList));
+	public void formsList_duplicateSelected() {
+		Form selected = getSelectedForm();
+		assert(selected != null) : "Duplicate Form button should not be enabled if there is no form selected!";
+		
 		Form clone = new Form(selected.getName() + '*');
 		for (FormField oldField : selected.getFields()) {
 			FormField newField = new FormField(oldField.getType(), oldField.getLabel());
@@ -376,17 +382,10 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		this.refresh();
 	}
 	
-	/**
-	 * Form selection has changed, so decide which toolbar and popup options should be available considering the current selection.
-	 * @param popUp The popup menu of the forms list
-	 * @param list The list of forms whose selection has changed
-	 * @param toolbar The button bar at the bottom of the forms list
-	 */
-	public void formsTab_enabledFields(Object popUp, Object list, Object toolbar) {
-		Object selectedComponent = uiController.getSelectedItem(list);
-
-		enableMenuOptions(toolbar, selectedComponent);
-		enableMenuOptions(popUp, selectedComponent);
+	/** Form selection has changed, so decide which toolbar and popup options should be available considering the current selection. */
+	public void formsTab_enabledFields() {
+		enableMenuOptions(find("formsList_toolbar"));
+		enableMenuOptions(find("formsList_popupMenu"));
 	}
 	
 	/**
@@ -394,7 +393,8 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 * @param menuComponent Menu component, a button bar or popup menu
 	 * @param selectedComponent The selected object of the control that this menu applied to
 	 */
-	private void enableMenuOptions(Object menuComponent, Object selectedComponent) {
+	private void enableMenuOptions(Object menuComponent) {
+		Object selectedComponent = formsList_getSelected();
 		Form selectedForm = getForm(selectedComponent);
 		for (Object o : uiController.getItems(menuComponent)) {
 			String name = uiController.getName(o);
@@ -420,7 +420,9 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 * FIXME confirm this is called from XML as otherwise we can make it private
 	 */
 	private void formsTab_updateResults() {
-		Form selected = getForm(formsList_getSelection());
+		Form selected = getSelectedForm();
+		assert(selected != null) : "Should not be attempting to update the Form's results view if no form is selected.";
+		
 		int limit = uiController.getListLimit(formResultsComponent);
 		int pageNumber = uiController.getListCurrentPage(formResultsComponent);
 		uiController.removeAll(formResultsComponent);
@@ -432,7 +434,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 			}
 		}
 		
-		uiController.updatePageNumber(formResultsComponent, uiController.find(TAB_FORMS));
+		uiController.updatePageNumber(formResultsComponent, getFormsTab());
 	}
 	
 	/**
@@ -445,15 +447,21 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	}
 
 //> THINLET EVENT HELPER METHODS
+	/** @return the {@link Form} selected in the {@link #getFormsList()}, or <code>null</code> if none is selected */
+	private Form getSelectedForm() {
+		Object selectedComponent = formsList_getSelected();
+		if(selectedComponent == null) return null;
+		else return getForm(selectedComponent);
+	}
+	
+	/** @return gets the ui component selected in the forms list */
+	private Object formsList_getSelected() {
+		return this.uiController.getSelectedItem(getFormsList());
+	}
 
 	/** @return the forms list component */
 	private Object getFormsList() {
-		return uiController.find(this.tabComponent, FormsThinletTabController.FORMS_LIST_COMPONENT_NAME);
-	}
-	
-	/** @return the form or form field attached to the selection of the forms list */
-	private Object formsList_getSelection() {
-		return uiController.getSelectedItem(uiController.find(FORMS_LIST_COMPONENT_NAME));
+		return find(FormsThinletTabController.FORMS_LIST_COMPONENT_NAME);
 	}
 	
 	/** Given a {@link VisualForm}, the form edit window, this saves its details. */
@@ -498,8 +506,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	
 	/** Adds the result panel to the forms tab. */
 	private void addFormResultsPanel() {
-		Object formsTab = uiController.getCurrentTab();
-		Object pnRight = uiController.find(formsTab, "pnRight");
+		Object pnRight = find("pnRight");
 		uiController.removeAll(pnRight);
 		Object resultsView = uiController.loadComponentFromFile(UI_FILE_RESULTS_VIEW, this);
 		Object pagePanel = uiController.loadComponentFromFile(UiGeneratorControllerConstants.UI_FILE_PAGE_PANEL, this);
@@ -508,7 +515,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		uiController.add(uiController.getParent(placeholder), pagePanel, index);
 		uiController.remove(placeholder);
 		uiController.add(pnRight, resultsView);
-		uiController.setPageMethods(formsTab, "formResultsList", pagePanel);
+		uiController.setPageMethods(getFormsTab(), "formResultsList", pagePanel);
 		formResultsComponent = uiController.find(resultsView, "formResultsList");
 		uiController.setListLimit(formResultsComponent);
 		uiController.setListPageNumber(1, formResultsComponent);
@@ -521,9 +528,9 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 */
 	private void showResultsPanel(Form selected) {
 		addFormResultsPanel();
-		Object pagePanel = uiController.find(uiController.getCurrentTab(), "pagePanel");
+		Object pagePanel = find("pagePanel");
 		uiController.setVisible(pagePanel, true);
-		Object pnResults = uiController.find("pnFormResults");
+		Object pnResults = find("pnFormResults");
 		uiController.setInteger(pnResults, "columns", 2);
 		
 		int count = selected == null ? 0 : formResponseDao.getFormResponseCount(selected);
@@ -533,7 +540,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		formsTab_updateResults();
 		
 		uiController.setEnabled(formResultsComponent, selected != null && uiController.getItems(formResultsComponent).length > 0);
-		uiController.setEnabled(uiController.find("btExportFormResults"), selected != null && uiController.getItems(formResultsComponent).length > 0);
+		uiController.setEnabled(find("btExportFormResults"), selected != null && uiController.getItems(formResultsComponent).length > 0);
 	}
 
 	/**
@@ -605,24 +612,9 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		LOG.trace("EXIT");
 		return node;
 	}
-	
-	private Object getRow(String aggregatedValue, int hits, FormField selected) {
-		Object row = uiController.createTableRow(null);
-		String value = aggregatedValue;
-		if (selected.getType().equals(CheckBox.class)) {
-			boolean sel = Boolean.valueOf(value);
-			Object cell = uiController.createTableCell("");
-			uiController.setIcon(cell, sel ? Icon.TICK : Icon.CANCEL);
-			uiController.add(row, cell);
-		} else {
-			uiController.add(row, uiController.createTableCell(value));
-		}
-		uiController.add(row, uiController.createTableCell(hits));
-		return row;
-	}
 
 	private void form_createColumns(Form selected) {
-		Object resultsTable = uiController.find("formResultsList");
+		Object resultsTable = find("formResultsList");
 		Object header = uiController.get(resultsTable, Thinlet.HEADER);
 		uiController.removeAll(header);
 		if (selected != null) {
@@ -685,18 +677,6 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 */
 	private Image getIcon(String iconPath) {
 		return this.uiController.getIcon(iconPath);
-	}
-	
-	private void sendForm(Form formToSend, String msisdn, int formsSmsPort) {
-		// TODO Auto-generated method stub
-		// FIXME please implement this method if it is actually used
-		throw new IllegalStateException("This method is not yet implemented");
-	}
-
-	private void sendSMS(String targetNumber, String messageContent) {
-		this.pluginController.getFrontlineController().sendTextMessage(targetNumber, messageContent);
-		// FIXME please remove exception if this method is actually used
-		throw new IllegalStateException("This method appears not to be called.");
 	}
 	
 	/**
