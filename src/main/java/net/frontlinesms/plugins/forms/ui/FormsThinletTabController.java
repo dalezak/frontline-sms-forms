@@ -8,11 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import thinlet.Thinlet;
 
-import net.frontlinesms.Utils;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.ContactDao;
@@ -20,7 +17,7 @@ import net.frontlinesms.plugins.forms.FormsPluginController;
 import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
-import net.frontlinesms.plugins.PluginController;
+import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.ThinletUiEventHandler;
 import net.frontlinesms.ui.UiGeneratorController;
@@ -33,7 +30,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
  * @author Alex
  */
 @TextResourceKeyOwner(prefix="I18N_")
-public class FormsThinletTabController implements ThinletUiEventHandler {
+public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements ThinletUiEventHandler {
 //> CONSTANTS
 	/** XML file containing forms pane for viewing results of a form */
 	protected static final String UI_FILE_RESULTS_VIEW = "/ui/plugins/forms/formsTab_resultsView.xml";
@@ -87,16 +84,6 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	public static final String SENTENCE_DOWN_KEY = "sentence.down.key";
 	
 //> INSTANCE PROPERTIES
-	/** Logging object */
-	private final Logger LOG = Utils.getLogger(this.getClass());
-	/** The {@link PluginController} that owns this class. */
-	private final FormsPluginController pluginController;
-	/** The {@link UiGeneratorController} that shows the tab. */
-	private final UiGeneratorController uiController;
-	
-	/** The thinlet component containing the tab. */
-	private Object tabComponent;
-
 	// FIXME work out what this is here for
 	private Object formResultsComponent;
 	/** DAO for {@link Contact}s */
@@ -105,18 +92,13 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	private FormDao formsDao;
 	/** DAO for {@link FormResponse}s */
 	private FormResponseDao formResponseDao;
-	
+
 //> CONSTRUCTORS
-	/**
-	 * Create a new instance of this class.
-	 * @param pluginController
-	 * @param uiController
-	 */
 	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController uiController) {
-		this.pluginController = pluginController;
-		this.uiController = uiController;
+		super(pluginController, uiController);
 	}
 	
+//> INSTANCE METHODS	
 	/** Refresh the tab's display. */
 	public void refresh() {
 		Object formList = getFormsList();
@@ -141,37 +123,6 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 
 		// We should enable or disable buttons as appropriate
 		formsList_selectionChanged();
-	}
-	
-//> PASS-THROUGH METHODS TO UI CONTROLLER
-	/** @return the named ui component in the current tab, or <code>null</code> if none could be found. */
-	private Object find(String componentName) {
-		return this.uiController.find(this.tabComponent, componentName);
-	}
-	
-	/** @return the forms tab component. */
-	private Object getFormsTab() {
-		return this.tabComponent;
-	}
-	
-	/** @see UiGeneratorController#showHelpPage(String) */
-	public void showHelpPage(String page) {
-		uiController.showHelpPage(page);
-	}
-	
-	/** @see UiGeneratorController#showConfirmationDialog(String) */
-	public void showConfirmationDialog(String methodToBeCalled) {
-		this.uiController.showConfirmationDialog(methodToBeCalled, this);
-	}
-	
-	/** @see UiGeneratorController#groupList_expansionChanged(Object) */
-	public void groupList_expansionChanged(Object groupList) {
-		this.uiController.groupList_expansionChanged(groupList);
-	}
-	
-	/** @see UiGeneratorController#removeDialog(Object) */
-	public void removeDialog(Object dialog) {
-		this.uiController.removeDialog(dialog);
 	}
 	
 //> THINLET EVENT METHODS
@@ -345,7 +296,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 			}
 		
 			// Issue the send command to the plugin controller
-			this.pluginController.sendForm(form, selectedContacts);
+			this.getPluginController().sendForm(form, selectedContacts);
 
 			// FIXME i18n
 			uiController.alert("Your form '" + form.getName() + "' has been sent to " + selectedContacts.size() + " contacts.");
@@ -409,9 +360,9 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 					uiController.setEnabled(o, true);
 				} else {
 					uiController.setEnabled(o, selectedForm != null);
+				}
 			}
 		}
-	}
 	}
 	
 	/**
@@ -434,7 +385,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 			}
 		}
 		
-		uiController.updatePageNumber(formResultsComponent, getFormsTab());
+		uiController.updatePageNumber(formResultsComponent, getTabComponent());
 	}
 	
 	/**
@@ -515,7 +466,7 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 		uiController.add(uiController.getParent(placeholder), pagePanel, index);
 		uiController.remove(placeholder);
 		uiController.add(pnRight, resultsView);
-		uiController.setPageMethods(getFormsTab(), "formResultsList", pagePanel);
+		uiController.setPageMethods(getTabComponent(), "formResultsList", pagePanel);
 		formResultsComponent = uiController.find(resultsView, "formResultsList");
 		uiController.setListLimit(formResultsComponent);
 		uiController.setListPageNumber(1, formResultsComponent);
@@ -659,14 +610,6 @@ public class FormsThinletTabController implements ThinletUiEventHandler {
 	 */
 	public void setContactDao(ContactDao contactDao) {
 		this.contactDao = contactDao;
-	}
-	
-	/**
-	 * Set {@link #tabComponent}
-	 * @param tabComponent new value for {@link #tabComponent}
-	 */
-	public void setTabComponent(Object tabComponent) {
-		this.tabComponent = tabComponent;
 	}
 	
 //> TEMPORARY METHODS THAT NEED SORTING OUT
