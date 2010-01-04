@@ -30,7 +30,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
  * @author Alex
  */
 @TextResourceKeyOwner(prefix="I18N_")
-public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements ThinletUiEventHandler {
+public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> {
 //> CONSTANTS
 	/** XML file containing forms pane for viewing results of a form */
 	protected static final String UI_FILE_RESULTS_VIEW = "/ui/plugins/forms/formsTab_resultsView.xml";
