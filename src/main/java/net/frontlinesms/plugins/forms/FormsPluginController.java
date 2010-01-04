@@ -191,7 +191,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 		// FIXME i18n this
 		String messageContent = "There is a new form available: " + form.getName();
 		for(Contact c : contacts) {
-			this.frontlineController.sendTextMessage(c.getMsisdn(), messageContent);
+			this.frontlineController.sendTextMessage(c.getPhoneNumber(), messageContent);
 		}
 	}
 

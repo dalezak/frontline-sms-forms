@@ -365,12 +365,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		}
 	}
 	
-	/**
-	 * Update the results for the selected form, taking into account the
-	 * page number as well.
-	 * FIXME confirm this is called from XML as otherwise we can make it private
-	 */
-	private void formsTab_updateResults() {
+	/** Update the results for the selected form, taking into account the page number as well. */
+	public void formsTab_updateResults() {
 		Form selected = getSelectedForm();
 		assert(selected != null) : "Should not be attempting to update the Form's results view if no form is selected.";
 		
@@ -470,7 +466,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		formResultsComponent = uiController.find(resultsView, "formResultsList");
 		uiController.setListLimit(formResultsComponent);
 		uiController.setListPageNumber(1, formResultsComponent);
-		uiController.setMethod(formResultsComponent, "formsTab_updateResults");
+		uiController.setAction(formResultsComponent, "formsTab_updateResults", this.getTabComponent(), this);
 	}
 
 	/**
