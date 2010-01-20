@@ -94,8 +94,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private FormResponseDao formResponseDao;
 
 //> CONSTRUCTORS
-	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController uiController) {
-		super(pluginController, uiController);
+	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController ui) {
+		super(pluginController, ui);
 	}
 	
 //> INSTANCE METHODS	
@@ -104,13 +104,13 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Object formList = getFormsList();
 		
 		// If there was something selected previously, we will attempt to select it again after updating the list
-		Object previousSelectedItem = this.uiController.getSelectedItem(formList);
-		Form previousSelectedForm = previousSelectedItem == null ? null : this.uiController.getAttachedObject(previousSelectedItem, Form.class);
-		uiController.removeAll(formList);
+		Object previousSelectedItem = this.ui.getSelectedItem(formList);
+		Form previousSelectedForm = previousSelectedItem == null ? null : this.ui.getAttachedObject(previousSelectedItem, Form.class);
+		ui.removeAll(formList);
 		Object newSelectedItem = null;
 		for(Form f : formsDao.getAllForms()) {
 			Object formNode = getNode(f);
-			uiController.add(formList, formNode);
+			ui.add(formList, formNode);
 			if(f.equals(previousSelectedForm)) {
 				newSelectedItem = formNode;
 			}
@@ -118,7 +118,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		
 		// Restore the selected item
 		if(newSelectedItem != null) {
-			this.uiController.setSelectedItem(formList, newSelectedItem);
+			this.ui.setSelectedItem(formList, newSelectedItem);
 		}
 
 		// We should enable or disable buttons as appropriate
@@ -128,23 +128,23 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 //> THINLET EVENT METHODS
 	/** Show the dialog for exporting form results. */
 	public void showFormExportDialog() {
-		uiController.add(uiController.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this));
+		ui.add(ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this));
 	}
 	
 	/** Show the AWT Forms Editor window */
 	public void showFormsEditor() {
 		VisualForm form = new VisualForm();
-		form = FormsUiController.getInstance().showFormsEditor(uiController.getFrameLauncher(), form);
+		form = FormsUiController.getInstance().showFormsEditor(ui.getFrameLauncher(), form);
 		if (form != null) {
 			saveFormInformation(form);
 		}
 	}
 	
 	public void removeSelected(Object component) {
-		Object[] selected = this.uiController.getSelectedItems(component);
+		Object[] selected = this.ui.getSelectedItems(component);
 		if(selected != null) {
 			for(Object selectedComponent : selected) {
-				this.uiController.remove(selectedComponent);
+				this.ui.remove(selectedComponent);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @param formsList
 	 */
 	public void formsList_selectionChanged() {
-		Form selectedForm = getForm(uiController.getSelectedItem(getFormsList()));
+		Form selectedForm = getForm(ui.getSelectedItem(getFormsList()));
 		
 		if (selectedForm != null) {
 			if (selectedForm.isFinalised()) {
@@ -163,7 +163,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		} else {
 			//Nothing selected
 			Object pnRight = find("pnRight");
-			uiController.removeAll(pnRight);
+			ui.removeAll(pnRight);
 		}
 		formsTab_enabledFields();
 	}
@@ -178,7 +178,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			VisualForm visualForm = VisualForm.getVisualForm(selectedForm);
 			List<PreviewComponent> old = new ArrayList<PreviewComponent>();
 			old.addAll(visualForm.getComponents());
-			visualForm = FormsUiController.getInstance().showFormsEditor(uiController.getFrameLauncher(), visualForm);
+			visualForm = FormsUiController.getInstance().showFormsEditor(ui.getFrameLauncher(), visualForm);
 			if (visualForm != null) {
 				if (!visualForm.getName().equals(selectedForm.getName())) {
 					selectedForm.setName(visualForm.getName());
@@ -192,10 +192,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	/** Shows a selecter for assigning a {@link Group} to a {@link Form} */
 	public void formsList_showGroupSelecter() {
 		Form selectedForm = getSelectedForm();
-		LOG.info("FormsThinletTabController.showGroupSelecter() : " + selectedForm);
+		log.info("FormsThinletTabController.showGroupSelecter() : " + selectedForm);
 		if(selectedForm != null) {
 			// FIXME i18n
-			uiController.showGroupSelecter(selectedForm, false, "Choose a group", "setSelectedGroup(groupSelecter, groupSelecter_groupList)", this);
+			ui.showGroupSelecter(selectedForm, false, "Choose a group", "setSelectedGroup(groupSelecter, groupSelecter_groupList)", this);
 		}
 	}
 
@@ -205,9 +205,9 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 */
 	public void setSelectedGroup(Object groupSelecter, Object groupList) {
 		Form form = getForm(groupSelecter);
-		LOG.info("Form: " + form);
-		Group group = uiController.getGroup(uiController.getSelectedItem(groupList));
-		LOG.info("Group: " + group);
+		log.info("Form: " + form);
+		Group group = ui.getGroup(ui.getSelectedItem(groupList));
+		log.info("Group: " + group);
 		if(group != null) {
 			// Set the permitted group for this form, then save it
 			form.setPermittedGroup(group);
@@ -229,10 +229,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			if(selectedForm.getPermittedGroup() == null) {
 				// The form has no group set, so we should explain that this needs to be done.
 				// FIXME i18n
-				uiController.alert("You must set a group for this form.\nYou can do this by right-clicking on the form.");
+				ui.alert("You must set a group for this form.\nYou can do this by right-clicking on the form.");
 			} else if(!selectedForm.isFinalised()) { // check the form is finalised.
 				// if form is not finalised, warn that it will be!
-				uiController.showConfirmationDialog("showSendSelectionDialog", this, I18N_KEY_CONFIRM_FINALISE);
+				ui.showConfirmationDialog("showSendSelectionDialog", this, I18N_KEY_CONFIRM_FINALISE);
 			} else {
 				// show dialog for selecting group members to send the form to
 				showSendSelectionDialog();
@@ -245,7 +245,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * finalised within this method.
 	 */
 	public void showSendSelectionDialog() {
-		uiController.removeConfirmationDialog();
+		ui.removeConfirmationDialog();
 		
 		Form form = getSelectedForm();
 		if(form != null) {
@@ -256,17 +256,17 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			}
 			
 			// show selection dialog for Contacts in the form's group
-			Object chooseContactsDialog = uiController.loadComponentFromFile(XML_CHOOSE_CONTACTS, this);
-			uiController.setAttachedObject(chooseContactsDialog, form);
+			Object chooseContactsDialog = ui.loadComponentFromFile(XML_CHOOSE_CONTACTS, this);
+			ui.setAttachedObject(chooseContactsDialog, form);
 			
 			// Add each contact in the group to the list.  The user can then remove any contacts they don't
 			// want to be sent an SMS about the form at this time.
-			Object contactList = uiController.find(chooseContactsDialog, "lsContacts");
+			Object contactList = ui.find(chooseContactsDialog, "lsContacts");
 			for(Contact contact : form.getPermittedGroup().getAllMembers()) {
-				Object listItem = uiController.createListItem(contact.getDisplayName(), contact);
-				uiController.add(contactList, listItem);
+				Object listItem = ui.createListItem(contact.getDisplayName(), contact);
+				ui.add(contactList, listItem);
 			}
-			uiController.add(chooseContactsDialog);
+			ui.add(chooseContactsDialog);
 		}
 	}
 	
@@ -276,17 +276,17 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 */
 	public void sendForm(Object dgChooseContacts) {
 		// Work out which contacts we should be sending the form to
-		Object[] recipientItems = uiController.getItems(uiController.find(dgChooseContacts, "lsContacts"));
+		Object[] recipientItems = ui.getItems(ui.find(dgChooseContacts, "lsContacts"));
 		Form form = getForm(dgChooseContacts);
 		if(recipientItems.length == 0) {
 			// There are no contacts in the "send to" list.  We should remove the dialog and inform the user
 			// of the problem.
-			uiController.alert(InternationalisationUtils.getI18NString(I18N_KEY_NO_CONTACTS_TO_NOTIFY));
-			uiController.removeDialog(dgChooseContacts);
+			ui.alert(InternationalisationUtils.getI18NString(I18N_KEY_NO_CONTACTS_TO_NOTIFY));
+			ui.removeDialog(dgChooseContacts);
 		} else {
 			HashSet<Contact> selectedContacts = new HashSet<Contact>();
 			for(Object o : recipientItems) {
-				Object attachment = uiController.getAttachedObject(o);
+				Object attachment = ui.getAttachedObject(o);
 				if(attachment instanceof Contact) {
 					selectedContacts.add((Contact)attachment);
 				} else if(attachment instanceof Group) {
@@ -299,9 +299,9 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			this.getPluginController().sendForm(form, selectedContacts);
 
 			// FIXME i18n
-			uiController.alert("Your form '" + form.getName() + "' has been sent to " + selectedContacts.size() + " contacts.");
+			ui.alert("Your form '" + form.getName() + "' has been sent to " + selectedContacts.size() + " contacts.");
 			
-			uiController.removeDialog(dgChooseContacts);
+			ui.removeDialog(dgChooseContacts);
 		}
 	}
 	
@@ -313,7 +313,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		}
 		this.refresh();
 		// Now remove the confirmation dialog.
-		uiController.removeConfirmationDialog();
+		ui.removeConfirmationDialog();
 	}
 	
 	/**
@@ -347,19 +347,19 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private void enableMenuOptions(Object menuComponent) {
 		Object selectedComponent = formsList_getSelected();
 		Form selectedForm = getForm(selectedComponent);
-		for (Object o : uiController.getItems(menuComponent)) {
-			String name = uiController.getName(o);
+		for (Object o : ui.getItems(menuComponent)) {
+			String name = ui.getName(o);
 			if(name != null) { 
 				if (name.contains("Delete")) {
 					// Tricky to remove the component for a form when the field is selected.  If someone wants to
 					// solve that, they're welcome to enable delete here for FormFields
-					uiController.setEnabled(o, uiController.getAttachedObject(selectedComponent) instanceof Form);
+					ui.setEnabled(o, ui.getAttachedObject(selectedComponent) instanceof Form);
 				} else if (name.contains("Edit")) {
-					uiController.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
+					ui.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
 				} else if (name.contains("New")) {
-					uiController.setEnabled(o, true);
+					ui.setEnabled(o, true);
 				} else {
-					uiController.setEnabled(o, selectedForm != null);
+					ui.setEnabled(o, selectedForm != null);
 				}
 			}
 		}
@@ -370,18 +370,18 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Form selected = getSelectedForm();
 		assert(selected != null) : "Should not be attempting to update the Form's results view if no form is selected.";
 		
-		int limit = uiController.getListLimit(formResultsComponent);
-		int pageNumber = uiController.getListCurrentPage(formResultsComponent);
-		uiController.removeAll(formResultsComponent);
+		int limit = ui.getListLimit(formResultsComponent);
+		int pageNumber = ui.getListCurrentPage(formResultsComponent);
+		ui.removeAll(formResultsComponent);
 		
 		if (selected != null) {
 			for (FormResponse response : formResponseDao.getFormResponses(selected, (pageNumber - 1) * limit, limit)) {
 				Object row = getRow(response);
-				uiController.add(formResultsComponent, row);
+				ui.add(formResultsComponent, row);
 			}
 		}
 		
-		uiController.updatePageNumber(formResultsComponent, getTabComponent());
+		ui.updatePageNumber(formResultsComponent, getTabComponent());
 	}
 	
 	/**
@@ -390,7 +390,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @param methodToBeCalled
 	 */
 	public void showFormConfirmationDialog(String methodToBeCalled){
-		uiController.showConfirmationDialog(methodToBeCalled, this);
+		ui.showConfirmationDialog(methodToBeCalled, this);
 	}
 
 //> THINLET EVENT HELPER METHODS
@@ -403,7 +403,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	
 	/** @return gets the ui component selected in the forms list */
 	private Object formsList_getSelected() {
-		return this.uiController.getSelectedItem(getFormsList());
+		return this.ui.getSelectedItem(getFormsList());
 	}
 
 	/** @return the forms list component */
@@ -454,19 +454,19 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	/** Adds the result panel to the forms tab. */
 	private void addFormResultsPanel() {
 		Object pnRight = find("pnRight");
-		uiController.removeAll(pnRight);
-		Object resultsView = uiController.loadComponentFromFile(UI_FILE_RESULTS_VIEW, this);
-		Object pagePanel = uiController.loadComponentFromFile(UiGeneratorControllerConstants.UI_FILE_PAGE_PANEL, this);
-		Object placeholder = uiController.find(resultsView, "pageControlsPanel");
-		int index = uiController.getIndex(uiController.getParent(placeholder), placeholder);
-		uiController.add(uiController.getParent(placeholder), pagePanel, index);
-		uiController.remove(placeholder);
-		uiController.add(pnRight, resultsView);
-		uiController.setPageMethods(getTabComponent(), "formResultsList", pagePanel);
-		formResultsComponent = uiController.find(resultsView, "formResultsList");
-		uiController.setListLimit(formResultsComponent);
-		uiController.setListPageNumber(1, formResultsComponent);
-		uiController.setAction(formResultsComponent, "formsTab_updateResults", this.getTabComponent(), this);
+		ui.removeAll(pnRight);
+		Object resultsView = ui.loadComponentFromFile(UI_FILE_RESULTS_VIEW, this);
+		Object pagePanel = ui.loadComponentFromFile(UiGeneratorControllerConstants.UI_FILE_PAGE_PANEL, this);
+		Object placeholder = ui.find(resultsView, "pageControlsPanel");
+		int index = ui.getIndex(ui.getParent(placeholder), placeholder);
+		ui.add(ui.getParent(placeholder), pagePanel, index);
+		ui.remove(placeholder);
+		ui.add(pnRight, resultsView);
+		ui.setPageMethods(getTabComponent(), "formResultsList", pagePanel);
+		formResultsComponent = ui.find(resultsView, "formResultsList");
+		ui.setListLimit(formResultsComponent);
+		ui.setListPageNumber(1, formResultsComponent);
+		ui.setAction(formResultsComponent, "formsTab_updateResults", this.getTabComponent(), this);
 	}
 
 	/**
@@ -476,18 +476,18 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private void showResultsPanel(Form selected) {
 		addFormResultsPanel();
 		Object pagePanel = find("pagePanel");
-		uiController.setVisible(pagePanel, true);
+		ui.setVisible(pagePanel, true);
 		Object pnResults = find("pnFormResults");
-		uiController.setInteger(pnResults, "columns", 2);
+		ui.setInteger(pnResults, "columns", 2);
 		
 		int count = selected == null ? 0 : formResponseDao.getFormResponseCount(selected);
 		form_createColumns(selected);
-		uiController.setListPageNumber(1, formResultsComponent);
-		uiController.setListElementCount(count, formResultsComponent);
+		ui.setListPageNumber(1, formResultsComponent);
+		ui.setListElementCount(count, formResultsComponent);
 		formsTab_updateResults();
 		
-		uiController.setEnabled(formResultsComponent, selected != null && uiController.getItems(formResultsComponent).length > 0);
-		uiController.setEnabled(find("btExportFormResults"), selected != null && uiController.getItems(formResultsComponent).length > 0);
+		ui.setEnabled(formResultsComponent, selected != null && ui.getItems(formResultsComponent).length > 0);
+		ui.setEnabled(find("btExportFormResults"), selected != null && ui.getItems(formResultsComponent).length > 0);
 	}
 
 	/**
@@ -495,11 +495,11 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @return a {@link Form} if a form or formfield was selected, or <code>null</code> if none could be found
 	 */
 	private Form getForm(Object selectedComponent) {
-		Object selectedAttachment = uiController.getAttachedObject(selectedComponent);
+		Object selectedAttachment = ui.getAttachedObject(selectedComponent);
 		if (selectedAttachment == null
 				|| !(selectedAttachment instanceof Form)) {
 			// The selected item was not a form item, so probably was a child of that.  Get it's parent, and check if that was a form instead
-			selectedAttachment = this.uiController.getAttachedObject(this.uiController.getParent(selectedComponent));
+			selectedAttachment = this.ui.getAttachedObject(this.ui.getParent(selectedComponent));
 		}
 		
 		if (selectedAttachment == null
@@ -517,12 +517,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @return row component to insert in a thinlet table
 	 */
 	private Object getRow(FormResponse response) {
-		Object row = uiController.createTableRow(response);
+		Object row = ui.createTableRow(response);
 		Contact sender = contactDao.getFromMsisdn(response.getSubmitter());
 		String senderDisplayName = sender != null ? sender.getDisplayName() : response.getSubmitter();
-		uiController.add(row, uiController.createTableCell(senderDisplayName));
+		ui.add(row, ui.createTableCell(senderDisplayName));
 		for (ResponseValue result : response.getResults()) {
-			uiController.add(row, uiController.createTableCell(result.toString()));
+			ui.add(row, ui.createTableCell(result.toString()));
 		}
 		return row;
 	}
@@ -533,51 +533,51 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @return node to insert in thinlet tree
 	 */
 	private Object getNode(Form form) {
-		LOG.trace("ENTER");
+		log.trace("ENTER");
 		// Create the node for this form
 		
-		LOG.debug("Form [" + form.getName() + "]");
+		log.debug("Form [" + form.getName() + "]");
 		
 		Image icon = getIcon(form.isFinalised() ? FormIcon.FORM_FINALISED: FormIcon.FORM);
-		Object node = uiController.createNode(form.getName(), form);
-		uiController.setIcon(node, Thinlet.ICON, icon);
+		Object node = ui.createNode(form.getName(), form);
+		ui.setIcon(node, Thinlet.ICON, icon);
 
 		// Create a node showing the group for this form
 		Group g = form.getPermittedGroup();
 		// FIXME i18n
 		String groupName = g == null ? "(not set)" : g.getName();
 		// FIXME i18n
-		Object groupNode = uiController.createNode("Group: " + groupName, null);
-		uiController.setIcon(groupNode, Icon.GROUP);
-		uiController.add(node, groupNode);
+		Object groupNode = ui.createNode("Group: " + groupName, null);
+		ui.setIcon(groupNode, Icon.GROUP);
+		ui.add(node, groupNode);
 		
 		for (FormField field : form.getFields()) {
-			Object child = uiController.createNode(field.getLabel(), field);
-			uiController.setIcon(child, Thinlet.ICON, getIcon(field.getType()));
-			uiController.add(node, child);
+			Object child = ui.createNode(field.getLabel(), field);
+			ui.setIcon(child, Thinlet.ICON, getIcon(field.getType()));
+			ui.add(node, child);
 		}
-		LOG.trace("EXIT");
+		log.trace("EXIT");
 		return node;
 	}
 
 	private void form_createColumns(Form selected) {
 		Object resultsTable = find("formResultsList");
-		Object header = uiController.get(resultsTable, Thinlet.HEADER);
-		uiController.removeAll(header);
+		Object header = ui.get(resultsTable, Thinlet.HEADER);
+		ui.removeAll(header);
 		if (selected != null) {
 			// FIXME check if this constant can be removed from frontlinesmsconstants class
-			Object column = uiController.createColumn(InternationalisationUtils.getI18NString(I18N_FORM_SUBMITTER), null);
-			uiController.setWidth(column, 100);
-			uiController.setIcon(column, Icon.PHONE_CONNECTED);
-			uiController.add(header, column);
+			Object column = ui.createColumn(InternationalisationUtils.getI18NString(I18N_FORM_SUBMITTER), null);
+			ui.setWidth(column, 100);
+			ui.setIcon(column, Icon.PHONE_CONNECTED);
+			ui.add(header, column);
 			// For some reason we have a number column
 			int count = 0;
 			for (FormField field : selected.getFields()) {
 				if(field.getType().hasValue()) {
-					column = uiController.createColumn(field.getLabel(), new Integer(++count));
-					uiController.setInteger(column, "width", 100);
-					uiController.setIcon(column, getIcon(field.getType()));
-					uiController.add(header, column);
+					column = ui.createColumn(field.getLabel(), new Integer(++count));
+					ui.setInteger(column, "width", 100);
+					ui.setIcon(column, getIcon(field.getType()));
+					ui.add(header, column);
 				}
 			}
 		}
@@ -615,7 +615,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * @return currently this returns <code>null</code> - needs to be implemented!
 	 */
 	private Image getIcon(String iconPath) {
-		return this.uiController.getIcon(iconPath);
+		return this.ui.getIcon(iconPath);
 	}
 	
 	/**

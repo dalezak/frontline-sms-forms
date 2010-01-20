@@ -3,13 +3,13 @@
  */
 package net.frontlinesms.plugins.forms;
 
-import net.frontlinesms.resources.PropertySet;
+import net.frontlinesms.resources.UserHomeFilePropertySet;
 
 /**
  * @author Alex
  *
  */
-public class FormsProperties extends PropertySet {
+public class FormsProperties extends UserHomeFilePropertySet {
 //> STATIC CONSTANTS
 	/** Singleton instance of this class. */
 	private static FormsProperties instance;
