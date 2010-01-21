@@ -19,9 +19,12 @@ import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
 import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
-import net.frontlinesms.ui.ThinletUiEventHandler;
 import net.frontlinesms.ui.UiGeneratorController;
-import net.frontlinesms.ui.UiGeneratorControllerConstants;
+import net.frontlinesms.ui.handler.ComponentPagingHandler;
+import net.frontlinesms.ui.handler.PagedComponentItemProvider;
+import net.frontlinesms.ui.handler.PagedListDetails;
+import net.frontlinesms.ui.handler.contacts.GroupSelecterDialog;
+import net.frontlinesms.ui.handler.contacts.SingleGroupSelecterDialogOwner;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
 import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
 
@@ -30,7 +33,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
  * @author Alex
  */
 @TextResourceKeyOwner(prefix="I18N_")
-public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> {
+public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements SingleGroupSelecterDialogOwner, PagedComponentItemProvider {
 //> CONSTANTS
 	/** XML file containing forms pane for viewing results of a form */
 	protected static final String UI_FILE_RESULTS_VIEW = "/ui/plugins/forms/formsTab_resultsView.xml";
@@ -84,14 +87,17 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String SENTENCE_DOWN_KEY = "sentence.down.key";
 	
 //> INSTANCE PROPERTIES
-	// FIXME work out what this is here for
-	private Object formResultsComponent;
 	/** DAO for {@link Contact}s */
 	private ContactDao contactDao;
 	/** DAO for {@link Form}s */
 	private FormDao formsDao;
 	/** DAO for {@link FormResponse}s */
 	private FormResponseDao formResponseDao;
+
+	/** UI table displaying the results. */
+	private Object formResultsComponent;
+	/** Paging handler for the results component */
+	private ComponentPagingHandler formResponseTablePageControls;
 
 //> CONSTRUCTORS
 	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController ui) {
@@ -195,7 +201,23 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		log.info("FormsThinletTabController.showGroupSelecter() : " + selectedForm);
 		if(selectedForm != null) {
 			// FIXME i18n
-			ui.showGroupSelecter(selectedForm, false, "Choose a group", "setSelectedGroup(groupSelecter, groupSelecter_groupList)", this);
+//			ui.showGroupSelecter(selectedForm, false, "Choose a group", "setSelectedGroup(groupSelecter, groupSelecter_groupList)", this);
+			GroupSelecterDialog selecter = new GroupSelecterDialog(ui, this);
+			selecter.init("Choose a group", ui.getRootGroup());
+			selecter.show();
+		}
+	}
+	
+	public void groupSelectionCompleted(Group group) {
+		// TODO Auto-generated method stub
+		Form form = getSelectedForm();
+		log.info("Form: " + form);
+		log.info("Group: " + group);
+		if(group != null) {
+			// Set the permitted group for this form, then save it
+			form.setPermittedGroup(group);
+			this.formsDao.updateForm(form);
+			this.refresh();
 		}
 	}
 
@@ -365,23 +387,22 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		}
 	}
 	
-	/** Update the results for the selected form, taking into account the page number as well. */
-	public void formsTab_updateResults() {
-		Form selected = getSelectedForm();
-		assert(selected != null) : "Should not be attempting to update the Form's results view if no form is selected.";
-		
-		int limit = ui.getListLimit(formResultsComponent);
-		int pageNumber = ui.getListCurrentPage(formResultsComponent);
-		ui.removeAll(formResultsComponent);
-		
-		if (selected != null) {
-			for (FormResponse response : formResponseDao.getFormResponses(selected, (pageNumber - 1) * limit, limit)) {
-				Object row = getRow(response);
-				ui.add(formResultsComponent, row);
-			}
+	public PagedListDetails getListDetails(Object list, int startIndex, int limit) {
+		Form selectedForm = getSelectedForm();
+		int totalItemCount = this.formResponseDao.getFormResponseCount(selectedForm);
+
+		ArrayList<Object> responseRows = new ArrayList<Object>();
+		for (FormResponse response : formResponseDao.getFormResponses(selectedForm, startIndex, limit)) {
+			Object row = getRow(response);
+			responseRows.add(row);
 		}
 		
-		ui.updatePageNumber(formResultsComponent, getTabComponent());
+		return new PagedListDetails(totalItemCount, responseRows.toArray(new Object[0]));
+	}
+	
+	/** Update the results for the selected form, taking into account the page number as well. */
+	public void formsTab_updateResults() {
+		this.formResponseTablePageControls.refresh();
 	}
 	
 	/**
@@ -456,17 +477,16 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Object pnRight = find("pnRight");
 		ui.removeAll(pnRight);
 		Object resultsView = ui.loadComponentFromFile(UI_FILE_RESULTS_VIEW, this);
-		Object pagePanel = ui.loadComponentFromFile(UiGeneratorControllerConstants.UI_FILE_PAGE_PANEL, this);
+
+		formResultsComponent = ui.find(resultsView, "formResultsList");
+		this.formResponseTablePageControls = new ComponentPagingHandler(ui, this, this.formResultsComponent);
+
 		Object placeholder = ui.find(resultsView, "pageControlsPanel");
 		int index = ui.getIndex(ui.getParent(placeholder), placeholder);
-		ui.add(ui.getParent(placeholder), pagePanel, index);
+		ui.add(ui.getParent(placeholder), this.formResponseTablePageControls.getPanel(), index);
 		ui.remove(placeholder);
+		
 		ui.add(pnRight, resultsView);
-		ui.setPageMethods(getTabComponent(), "formResultsList", pagePanel);
-		formResultsComponent = ui.find(resultsView, "formResultsList");
-		ui.setListLimit(formResultsComponent);
-		ui.setListPageNumber(1, formResultsComponent);
-		ui.setAction(formResultsComponent, "formsTab_updateResults", this.getTabComponent(), this);
 	}
 
 	/**
@@ -480,10 +500,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Object pnResults = find("pnFormResults");
 		ui.setInteger(pnResults, "columns", 2);
 		
-		int count = selected == null ? 0 : formResponseDao.getFormResponseCount(selected);
 		form_createColumns(selected);
-		ui.setListPageNumber(1, formResultsComponent);
-		ui.setListElementCount(count, formResultsComponent);
 		formsTab_updateResults();
 		
 		ui.setEnabled(formResultsComponent, selected != null && ui.getItems(formResultsComponent).length > 0);
@@ -562,7 +579,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 
 	private void form_createColumns(Form selected) {
 		Object resultsTable = find("formResultsList");
-		Object header = ui.get(resultsTable, Thinlet.HEADER);
+		Object header = Thinlet.get(resultsTable, Thinlet.HEADER);
 		ui.removeAll(header);
 		if (selected != null) {
 			// FIXME check if this constant can be removed from frontlinesmsconstants class
