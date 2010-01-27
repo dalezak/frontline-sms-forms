@@ -32,7 +32,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
  * Thinlet controller class for the FrontlineSMS Forms plugin.
  * @author Alex
  */
-@TextResourceKeyOwner(prefix="I18N_")
+@TextResourceKeyOwner(prefix={"I18N_", "COMMON_", "SENTENCE_", "TOOLTIP_"})
 public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements SingleGroupSelecterDialogOwner, PagedComponentItemProvider {
 //> CONSTANTS
 	/** XML file containing forms pane for viewing results of a form */
