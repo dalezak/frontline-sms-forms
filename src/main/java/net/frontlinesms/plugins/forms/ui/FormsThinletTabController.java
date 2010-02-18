@@ -13,6 +13,7 @@ import thinlet.Thinlet;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.ContactDao;
+import net.frontlinesms.data.repository.GroupMembershipDao;
 import net.frontlinesms.plugins.forms.FormsPluginController;
 import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
@@ -93,6 +94,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private FormDao formsDao;
 	/** DAO for {@link FormResponse}s */
 	private FormResponseDao formResponseDao;
+	/** DAO for getting {@link Contact}s in {@link Group}s */
+	private GroupMembershipDao groupMembershipDao;
 
 	/** UI table displaying the results. */
 	private Object formResultsComponent;
@@ -284,7 +287,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			// Add each contact in the group to the list.  The user can then remove any contacts they don't
 			// want to be sent an SMS about the form at this time.
 			Object contactList = ui.find(chooseContactsDialog, "lsContacts");
-			for(Contact contact : form.getPermittedGroup().getAllMembers()) {
+			for(Contact contact : this.groupMembershipDao.getActiveMembers(form.getPermittedGroup())) {
 				Object listItem = ui.createListItem(contact.getDisplayName(), contact);
 				ui.add(contactList, listItem);
 			}
@@ -313,7 +316,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 					selectedContacts.add((Contact)attachment);
 				} else if(attachment instanceof Group) {
 					Group g = (Group)attachment;
-					selectedContacts.addAll(g.getDirectMembers());
+					selectedContacts.addAll(this.groupMembershipDao.getActiveMembers(g));
 				}
 			}
 		
