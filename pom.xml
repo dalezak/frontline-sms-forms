@@ -3,7 +3,7 @@
 	<groupId>net.frontlinesms.plugins</groupId>
 	<artifactId>frontlinesms-plugin-forms</artifactId>
 	<name>FrontlineSMS Forms plugin</name>
-	<version>0.02.02-SNAPSHOT</version>
+	<version>0.02.02-beta1-SNAPSHOT</version>
 	<description>FrontlineForms plugin for FrontlineSMS</description>
 	<licenses>
 		<license>
@@ -31,6 +31,11 @@
 			</comments>
 		</license>
 	</licenses>
+	
+	<scm>
+		<connection>scm:git://frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms.git</connection>
+		<developerConnection>scm:git:ssh://alexandergeorge@frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms</developerConnection>
+	</scm>
 	
 	<repositories>
 		<repository>
@@ -62,6 +67,10 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
