@@ -8,8 +8,6 @@ import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.GroupDao;
 import net.frontlinesms.junit.HibernateTestCase;
 import net.frontlinesms.plugins.forms.data.domain.Form;
-import net.frontlinesms.plugins.forms.data.domain.FormField;
-import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
