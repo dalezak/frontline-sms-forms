@@ -51,6 +51,7 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 
 	/** @see FormDao#updateForm(Form) */
 	public void updateForm(Form form) {
+		// We're not checking if the form is finalised here, because the group can be modified, even finalised
 		super.updateWithoutDuplicateHandling(form);
 	}
 
@@ -62,6 +63,11 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 	/** @see FormDao#getAllForms() */
 	public Collection<Form> getAllForms() {
 		return super.getAll();
+	}
+	
+	/** @see FormDao#getCount() */
+	public int getCount() {
+		return super.countAll();
 	}
 
 	/** @see FormDao#finaliseForm(Form) */

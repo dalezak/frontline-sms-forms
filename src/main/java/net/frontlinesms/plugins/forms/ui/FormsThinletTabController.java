@@ -61,7 +61,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String I18N_FORM_SUBMITTER = "form.submitter";
 
 	/** i18n key: "Currency field" */
-	public static final String I18N_FCOMP_CURRENCY = "form.field.currency";
+	public static final String I18N_FCOMP_CURRENCY = "forms.field.currency";
 	public static final String I18N_FCOMP_DROP_DOWN_LIST = "common.dropdownlist";
 	public static final String I18N_FCOMP_MENU_ITEM = "common.menuitem";
 	public static final String I18N_FCOMP_NUMBER = "common.number";

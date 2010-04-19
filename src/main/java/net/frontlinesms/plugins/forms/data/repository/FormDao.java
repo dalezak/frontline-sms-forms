@@ -49,7 +49,8 @@ public interface FormDao {
 	/** @return all forms saved in the data source */
 	public Collection<Form> getAllForms();
 	
-	
+	/** @return number of forms saved in the data source */
+	public int getCount();
 	/**
 	 * Finalise a form to prevent it being edited again.
 	 * @param form The form to finalise

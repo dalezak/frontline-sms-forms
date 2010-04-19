@@ -4,7 +4,7 @@
 		 <splitpane divider="400" weightx="1" weighty="1" rowspan="2">
         	<panel columns="1" weighty="1" weightx="1" gap="8">
 		        <panel rowspan="2" border="true" bottom="4" columns="1" gap="8" icon="/icons/form.png" left="4" right="4" text="i18n.common.forms" top="4" weightx="1" weighty="1">
-		        	<tree delete="showConfirmationDialog('deleteSelected')" action="formsList_selectionChanged" name="formsList" weightx="1" weighty="1">
+		        	<tree delete="showConfirmationDialog('deleteSelected')" action="formsList_selectionChanged" perform="formsList_editSelected" name="formsList" weightx="1" weighty="1">
 		        		<popupmenu name="formsList_popupmenu" menushown="formsTab_enabledFields">
 		        			<menuitem action="showFormsEditor" icon="/icons/form_add.png" name="miNew" text="i18n.action.new" />
 		        			<menuitem action="formsList_editSelected" icon="/icons/form_edit.png" name="miEdit" text="i18n.action.edit" />
@@ -17,10 +17,10 @@
 		        		</popupmenu>
 		        	</tree>
 		        	<panel name="formsList_toolbar" gap="9" weightx="1" columns="3">
-		        		<button name="btNew" action="showFormsEditor" icon="/icons/big_form_add.png" text="i18n.action.new" weightx="1" />
+		        		<button name="btNew" action="showFormsEditor" icon="/icons/big_form_add.png" text="i18n.action.new" weightx="1"/>
 		        		<button name="btCopy" action="formsList_duplicateSelected" icon="/icons/big_form_copy.png" text="i18n.action.copy" weightx="1" enabled="false"/>
-		        		<button name="btEdit" action="formsList_editSelected" icon="/icons/big_form_edit.png" text="i18n.action.edit" weightx="1" enabled="false" />
-		        		<button name="btDelete" action="showConfirmationDialog('formsList_deleteSelected')" icon="/icons/big_form_delete.png" text="i18n.action.delete" weightx="1" enabled="false" />
+		        		<button name="btEdit" action="formsList_editSelected" icon="/icons/big_form_edit.png" text="i18n.action.edit" weightx="1" enabled="false"/>
+		        		<button name="btDelete" action="showConfirmationDialog('formsList_deleteSelected')" icon="/icons/big_form_delete.png" text="i18n.action.delete" weightx="1" enabled="false" mnemonic="0"/>
 		        		<button name="btSend" action="formsList_sendSelected" icon="/icons/big_form_send.png" text="i18n.common.send" weightx="1" enabled="false"/>
 		        	</panel>
 		        </panel>
