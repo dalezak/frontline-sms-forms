@@ -47,8 +47,8 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		formDao.saveForm(formTwo);
 		assertEquals(2, formDao.getCount());
 		
-		final int FORM_ID_ONE = (int)formOne.getMobileId();
-		final int FORM_ID_TWO = (int)formTwo.getMobileId();
+		final int FORM_ID_ONE = (int)formOne.getFormMobileId();
+		final int FORM_ID_TWO = (int)formTwo.getFormMobileId();
 		
 		Group group = new Group(new Group(null, null), "Group");
 		groupDao.saveGroup(group);
@@ -103,7 +103,7 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		
 			
 		Collection<Integer> formIds = new HashSet<Integer>();
-		formIds.add(formOne.getMobileId());
+		formIds.add(formOne.getFormMobileId());
 		request = new NewFormRequest(formIds);
 		// Test with the last contact, but specifying it already has one of the forms. Should then return only the other form.
 		assertEquals(1, this.formDao.getFormsForUser(contactThree, request.getCurrentFormIds()).size());

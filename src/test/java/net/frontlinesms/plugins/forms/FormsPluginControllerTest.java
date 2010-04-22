@@ -76,7 +76,7 @@ public class FormsPluginControllerTest extends BaseTestCase {
 		Form formOne = createForm(2);
 		
 		FormDao formDao = mock(FormDao.class);
-		when(formDao.getFromId(formOne.getMobileId())).thenReturn(formOne);
+		when(formDao.getFromId(formOne.getFormMobileId())).thenReturn(formOne);
 		
 		FormResponseDao formResponseDao = mock(FormResponseDao.class);
 		
@@ -87,10 +87,10 @@ public class FormsPluginControllerTest extends BaseTestCase {
 		controller.setFormResponseDao(formResponseDao);
 			
 		
-		SubmittedFormData formDataOne = new SubmittedFormData(formOne.getMobileId(), 0, createResponseValues(1));
-		SubmittedFormData formDataTwo = new SubmittedFormData(formOne.getMobileId(), 1, createResponseValues(2));
+		SubmittedFormData formDataOne = new SubmittedFormData(formOne.getFormMobileId(), 0, createResponseValues(1));
+		SubmittedFormData formDataTwo = new SubmittedFormData(formOne.getFormMobileId(), 1, createResponseValues(2));
 		SubmittedFormData formDataThree = new SubmittedFormData(-1, 2, createResponseValues(2));
-		SubmittedFormData formDataFour = new SubmittedFormData(formOne.getMobileId(), 3, createResponseValues(2));
+		SubmittedFormData formDataFour = new SubmittedFormData(formOne.getFormMobileId(), 3, createResponseValues(2));
 		
 		// Test with no data. Response should be empty
 		Set<SubmittedFormData> submittedFormData = new HashSet<SubmittedFormData>();

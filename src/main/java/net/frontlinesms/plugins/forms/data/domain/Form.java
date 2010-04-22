@@ -120,7 +120,7 @@ public class Form implements Serializable {
 	/** @return the mobileId of this form in the data source 
 	 * This id actually is the database id of the form, but we keep using this function to prevent errors with previous versions 
 	 * */
-	public int getMobileId() {
+	public int getFormMobileId() {
 		return (int)id;
 	}
 

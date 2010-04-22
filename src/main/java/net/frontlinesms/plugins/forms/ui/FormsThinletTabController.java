@@ -97,7 +97,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String MESSAGE_EXPORT_TASK_SUCCESSFUL = "message.export.successful";
 	private static final String MESSAGE_EXPORT_TASK_FAILED = "message.export.failed";
 	private static final String MESSAGE_BAD_DIRECTORY = "message.bad.directory";
-	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = null;
+	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = "message.file.overwrite.confirm";
 	
 //> INSTANCE PROPERTIES
 	/** DAO for {@link Contact}s */

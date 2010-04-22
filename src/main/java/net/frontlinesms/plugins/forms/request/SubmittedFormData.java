@@ -37,7 +37,7 @@ public class SubmittedFormData {
 	}
 	
 	/** @return {@link #formId} */
-	public int getMobileId() {
+	public int getFormMobileId() {
 		return formId;
 	}
 
