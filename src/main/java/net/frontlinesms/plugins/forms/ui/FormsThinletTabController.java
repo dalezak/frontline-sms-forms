@@ -93,6 +93,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String SENTENCE_UP_KEY = "sentence.up.key";
 	public static final String SENTENCE_DOWN_KEY = "sentence.down.key";
 	
+	private static final String MESSAGE_NO_FILENAME = "message.filename.blank";
+	private static final String MESSAGE_EXPORT_TASK_SUCCESSFUL = "message.export.successful";
+	private static final String MESSAGE_EXPORT_TASK_FAILED = "message.export.failed";
+	private static final String MESSAGE_BAD_DIRECTORY = "message.bad.directory";
+	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = null;
+	
 //> INSTANCE PROPERTIES
 	/** DAO for {@link Contact}s */
 	private ContactDao contactDao;
@@ -107,6 +113,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private Object formResultsComponent;
 	/** Paging handler for the results component */
 	private ComponentPagingHandler formResponseTablePageControls;
+	/** Used to store the confirmation dialog while it is being displayed, so that we can remove it later. */
+	private Object confirmationDialog;
+	
+	private Object exportDialog;
 
 //> CONSTRUCTORS
 	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController ui) {
@@ -143,7 +153,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 //> THINLET EVENT METHODS
 	/** Show the dialog for exporting form results. */
 	public void showFormExportDialog() {
-		ui.add(ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this));
+		exportDialog = ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this);
+		ui.add(exportDialog);
+	}
+	
+	public void showSaveModeFileChooser (Object textFieldToBeSet) {
+		this.ui.showSaveModeFileChooser(textFieldToBeSet);
 	}
 	
 	/** Show the AWT Forms Editor window */
@@ -169,72 +184,51 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 * and the user selection.
 	 * 
 	 * @param aggregate
-	 * @param filename
+	 * @param dataPath
 	 * @param exportDialog
-	 * /
-	public void formsTab_exportResults(boolean aggregate, String filename, Object exportDialog) {
-		Object formsList = find("formsList");
-		Object sel = ui.getAttachedObject(ui.getSelectedItem(formsList));
-		
-		if (filename.equals("")) {
-			alert(InternationalisationUtils.getI18NString(MESSAGE_NO_FILENAME));
-			return;
+	 */
+	public void formsTab_exportResults(String dataPath) {
+		if (!dataPath.contains(File.separator) || !(new File(dataPath.substring(0, dataPath.lastIndexOf(File.separator))).isDirectory())) {
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_BAD_DIRECTORY));
+		} else if (dataPath.substring(dataPath.lastIndexOf(File.separator), dataPath.length()).equals(File.separator)) {
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_NO_FILENAME));
+		} else {
+			log.debug("Filename is [" + dataPath + "] before [" + CsvExporter.CSV_EXTENSION + "] check.");
+			if (!dataPath.endsWith(CsvExporter.CSV_EXTENSION)) {
+				dataPath += CsvExporter.CSV_EXTENSION;
+			}
+			log.debug("Filename is [" + dataPath + "] after [" + CsvExporter.CSV_EXTENSION + "] check.");
+			
+			File csvFile = new File(dataPath);
+			if(csvFile.exists() && csvFile.isFile()) {
+				// Show confirmation dialog
+				this.confirmationDialog = ui.showConfirmationDialog("doExport('" + dataPath + "')", this, MESSAGE_CONFIRM_FILE_OVERWRITE);
+			} else {
+				doExport(dataPath);
+			}
 		}
-		if (!filename.endsWith(CsvExporter.CSV_EXTENSION)) filename += CsvExporter.CSV_EXTENSION; 
+	}
+
+	public void doExport(String filename) {
+		Object formsList = find("formsList");
+		Form selectedForm = getForm(ui.getSelectedItem(formsList));
+		
+		if (selectedForm == null) return;
+		
 		File file = new File(filename);
 		try {
-			String rowFormat = "";
-			if (!aggregate) rowFormat = getRowFormatForForm(exportDialog);
-			if (sel instanceof FormField) {
-				CsvFormExporter.exportFormField(file, (FormField) sel, aggregate, contactDao, rowFormat);
-			} else {
-				CsvFormExporter.exportForm(file, (Form) sel, aggregate, contactDao, rowFormat);
-			}
-			setStatus(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_SUCCESSFUL));
+			CsvFormExporter.exportForm(file, selectedForm, contactDao, formResponseDao);
+			
+			this.ui.setStatus(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_SUCCESSFUL));
 		}
 		catch (IOException e) {
 			log.debug(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED), e);
-			alert(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED));
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED));
 		} finally {
 			removeDialog(exportDialog);
 		}
 	}
-	
-	/**
-	 * Creates an export row format for forms.
-	 * 
-	 * @param exportDialog
-	 * @return
-	 * /
-	private String getRowFormatForForm(Object exportDialog) {
-		boolean exportContactName = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_NAME));
-		boolean exportContactOtherPhone = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_OTHER_NUMBER));
-		boolean exportContactEmail = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_EMAIL));
-		boolean exportContactNotes = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_NOTES));
-		
-		StringBuilder rowFormat = new StringBuilder("");
-		if (exportContactName) {
-			rowFormat.append(MARKER_CONTACT_NAME + ",");
-		}
-		if (exportContactOtherPhone) {
-			rowFormat.append(MARKER_CONTACT_OTHER_PHONE + ",");
-		}
-		if (exportContactEmail) {
-			rowFormat.append(MARKER_CONTACT_EMAIL + ",");
-		}
-		if (exportContactNotes) {
-			rowFormat.append(MARKER_CONTACT_NOTES + ",");
-		}
-		return rowFormat.toString();
-	}
-	/*
-	public void formsTab_exportDialogEnableFields(Object dialog, boolean aggregate) {
-		setEnabled(find(dialog, COMPONENT_CB_CONTACT_NAME), !aggregate);
-		setEnabled(find(dialog, COMPONENT_CB_CONTACT_OTHER_NUMBER), !aggregate);
-		setEnabled(find(dialog, COMPONENT_CB_CONTACT_EMAIL), !aggregate);
-		setEnabled(find(dialog, COMPONENT_CB_CONTACT_NOTES), !aggregate);
-	}
-*/
+
 	/**
 	 * Called when the user has selected a different item on the forms tree.
 	 * @param formsList
