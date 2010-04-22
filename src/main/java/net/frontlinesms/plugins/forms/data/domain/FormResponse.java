@@ -32,8 +32,7 @@ public class FormResponse implements Serializable {
 	private Form parentForm;
 	
 	/** The SMS message that this response was received in. */
-	@ManyToOne
-	private Message message;
+	private String senderMsisdn;
 	
 	/** The data content of the form response. */
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
@@ -49,8 +48,8 @@ public class FormResponse implements Serializable {
 	 * @param parentForm
 	 * @param results
 	 */
-	public FormResponse(Message message, Form parentForm, List<ResponseValue> results) {
-		this.message = message;
+	public FormResponse(String senderMsisdn, Form parentForm, List<ResponseValue> results) {
+		this.senderMsisdn = senderMsisdn;
 		this.parentForm = parentForm;
 		this.results = results;
 	}
@@ -63,7 +62,7 @@ public class FormResponse implements Serializable {
 	
 	/** @return the MSISDN of the form submitter */
 	public String getSubmitter() {
-		return this.message.getSenderMsisdn();
+		return this.senderMsisdn;
 	}
 	
 	/** @return {@link #parentForm} */

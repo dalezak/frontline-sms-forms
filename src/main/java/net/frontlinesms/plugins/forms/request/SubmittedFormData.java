@@ -13,7 +13,7 @@ import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
  */
 public class SubmittedFormData {
 	/** ID of the form that this data was submitted for. */
-	private final int formMobileId;
+	private final int formId;
 	/** ID of this data set */
 	private final int dataId;
 	/** List of data values that were submitted. */
@@ -21,19 +21,24 @@ public class SubmittedFormData {
 	
 	/**
 	 * Create a new instance of this class.
-	 * @param formMobileId
+	 * @param formId
 	 * @param dataId 
 	 * @param dataValues
 	 */
-	public SubmittedFormData(int formMobileId, int dataId, List<ResponseValue> dataValues) {
-		this.formMobileId = formMobileId;
+	public SubmittedFormData(int formId, int dataId, List<ResponseValue> dataValues) {
+		this.formId = formId;
 		this.dataId = dataId;
 		this.dataValues = dataValues;
 	}
 
-	/** @return {@link #formMobileId} */
-	public int getFormMobileId() {
-		return formMobileId;
+	/** @return {@link #formId} */
+	public int getFormId() {
+		return formId;
+	}
+	
+	/** @return {@link #formId} */
+	public int getMobileId() {
+		return formId;
 	}
 
 	/** @return {@link #dataValues} */

@@ -9,4 +9,6 @@
 	<!-- DAO declarations -->	
 	<bean id="formDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormDao" parent="baseHibernateDao"/>
 	<bean id="groupDao" class="net.frontlinesms.data.repository.hibernate.HibernateGroupDao" parent="baseHibernateDao"/>
+	<bean id="contactDao" class="net.frontlinesms.data.repository.hibernate.HibernateContactDao" parent="baseHibernateDao"/>
+	<bean id="groupMembershipDao" class="net.frontlinesms.data.repository.hibernate.HibernateGroupMembershipDao" parent="baseHibernateDao"/>
 </beans>

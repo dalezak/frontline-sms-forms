@@ -4,17 +4,22 @@
 package net.frontlinesms.plugins.forms.ui;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import thinlet.Thinlet;
 
+import net.frontlinesms.FrontlineSMSConstants;
+import net.frontlinesms.csv.CsvExporter;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.ContactDao;
 import net.frontlinesms.data.repository.GroupMembershipDao;
 import net.frontlinesms.plugins.forms.FormsPluginController;
+import net.frontlinesms.plugins.forms.csv.CsvFormExporter;
 import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
@@ -22,6 +27,7 @@ import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.handler.ComponentPagingHandler;
+import net.frontlinesms.ui.handler.ImportExportDialogHandler;
 import net.frontlinesms.ui.handler.PagedComponentItemProvider;
 import net.frontlinesms.ui.handler.PagedListDetails;
 import net.frontlinesms.ui.handler.contacts.GroupSelecterDialog;
@@ -157,7 +163,78 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			}
 		}
 	}
-
+	
+	/**
+	 * Calls the export method according to the supplied information,
+	 * and the user selection.
+	 * 
+	 * @param aggregate
+	 * @param filename
+	 * @param exportDialog
+	 * /
+	public void formsTab_exportResults(boolean aggregate, String filename, Object exportDialog) {
+		Object formsList = find("formsList");
+		Object sel = ui.getAttachedObject(ui.getSelectedItem(formsList));
+		
+		if (filename.equals("")) {
+			alert(InternationalisationUtils.getI18NString(MESSAGE_NO_FILENAME));
+			return;
+		}
+		if (!filename.endsWith(CsvExporter.CSV_EXTENSION)) filename += CsvExporter.CSV_EXTENSION; 
+		File file = new File(filename);
+		try {
+			String rowFormat = "";
+			if (!aggregate) rowFormat = getRowFormatForForm(exportDialog);
+			if (sel instanceof FormField) {
+				CsvFormExporter.exportFormField(file, (FormField) sel, aggregate, contactDao, rowFormat);
+			} else {
+				CsvFormExporter.exportForm(file, (Form) sel, aggregate, contactDao, rowFormat);
+			}
+			setStatus(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_SUCCESSFUL));
+		}
+		catch (IOException e) {
+			log.debug(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED), e);
+			alert(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED));
+		} finally {
+			removeDialog(exportDialog);
+		}
+	}
+	
+	/**
+	 * Creates an export row format for forms.
+	 * 
+	 * @param exportDialog
+	 * @return
+	 * /
+	private String getRowFormatForForm(Object exportDialog) {
+		boolean exportContactName = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_NAME));
+		boolean exportContactOtherPhone = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_OTHER_NUMBER));
+		boolean exportContactEmail = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_EMAIL));
+		boolean exportContactNotes = isSelected(find(exportDialog, COMPONENT_CB_CONTACT_NOTES));
+		
+		StringBuilder rowFormat = new StringBuilder("");
+		if (exportContactName) {
+			rowFormat.append(MARKER_CONTACT_NAME + ",");
+		}
+		if (exportContactOtherPhone) {
+			rowFormat.append(MARKER_CONTACT_OTHER_PHONE + ",");
+		}
+		if (exportContactEmail) {
+			rowFormat.append(MARKER_CONTACT_EMAIL + ",");
+		}
+		if (exportContactNotes) {
+			rowFormat.append(MARKER_CONTACT_NOTES + ",");
+		}
+		return rowFormat.toString();
+	}
+	/*
+	public void formsTab_exportDialogEnableFields(Object dialog, boolean aggregate) {
+		setEnabled(find(dialog, COMPONENT_CB_CONTACT_NAME), !aggregate);
+		setEnabled(find(dialog, COMPONENT_CB_CONTACT_OTHER_NUMBER), !aggregate);
+		setEnabled(find(dialog, COMPONENT_CB_CONTACT_EMAIL), !aggregate);
+		setEnabled(find(dialog, COMPONENT_CB_CONTACT_NOTES), !aggregate);
+	}
+*/
 	/**
 	 * Called when the user has selected a different item on the forms tree.
 	 * @param formsList
@@ -183,7 +260,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 */
 	public void formsList_editSelected() {
 		Form selectedForm = getSelectedForm();
-		if (selectedForm != null) {
+		if (selectedForm != null && !selectedForm.isFinalised()) {
 			VisualForm visualForm = VisualForm.getVisualForm(selectedForm);
 			List<PreviewComponent> old = new ArrayList<PreviewComponent>();
 			old.addAll(visualForm.getComponents());
@@ -657,5 +734,13 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		if(fieldType == FormFieldType.TRUNCATED_TEXT) 		return getIcon(FormIcon.TRUNCATED_TEXT);
 		if(fieldType == FormFieldType.WRAPPED_TEXT) 		return getIcon(FormIcon.WRAPPED_TEXT);
 		throw new IllegalStateException("No icon is mapped for field type: " + fieldType);
+	}
+	
+	/**
+	 * Set the DAO for this class
+	 * @param groupMembershipDao
+	 */
+	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
+		this.groupMembershipDao = groupMembershipDao;
 	}
 }

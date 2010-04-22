@@ -19,12 +19,11 @@ import net.frontlinesms.data.domain.Group;
 public class Form implements Serializable {
 //> FIELD NAMES
 	/** Column name for {@link #mobileId} */
-	public static final String FIELD_MOBILE_ID = "mobileId";
+	public static final String FIELD_ID = "id";
 	/** Column name for {@link #permittedGroup} */
 	public static final String FIELD_PERMITTED = "permittedGroup";
-	
-	/** Value for {@link #mobileId} before a form is finalised */
-	public static final int MOBILE_ID_NOT_SET = -1;
+	/** Column name for {@link #finalised} */
+	public static final String FIELD_FINALISED = "finalised";
 	
 //> INSTANCE PROPERTIES
 	/** Unique id for this entity.  This is for hibernate usage. */
@@ -39,9 +38,8 @@ public class Form implements Serializable {
 	@OneToMany(fetch=FetchType.EAGER, targetEntity=FormField.class, cascade=CascadeType.ALL)
 	private List<FormField> fields = new ArrayList<FormField>();
 	
-	/** The ID of this form when handled on a mobile device. */
-	@Column(name=FIELD_MOBILE_ID) // FIXME make this UNIQUE AND NULLABLE (trickier than it first appears)
-	private int mobileId = MOBILE_ID_NOT_SET;
+	/** To know if the form has been finalised yet */
+	private boolean finalised;
 	
 	/** Phone numbers which are allowed to download this form. */
 	@ManyToOne
@@ -57,16 +55,16 @@ public class Form implements Serializable {
 	 */
 	public Form(String name) {
 		this.name = name;
+		this.finalised = false;
 	}
 
 //> ACCESSOR METHODS
 	/**
-	 * Check whether this form is finalised by comparing the value of
-	 * {@link #mobileId} to {@link #MOBILE_ID_NOT_SET}.
-	 * @return <code>true</code> if this form has had its {@link #mobileId} set; <code>false</code> otherwise.
+	 * Check whether this form is finalised
+	 * @return <code>true</code> if this form has had its {@link #finalised} flag set to true; <code>false</code> otherwise.
 	 */
 	public boolean isFinalised() {
-		return this.mobileId != MOBILE_ID_NOT_SET;
+		return this.finalised;
 	}
 
 	/** @return {@link #fields} */
@@ -118,6 +116,13 @@ public class Form implements Serializable {
 	public void addField(FormField newField, int position) {
 		this.fields.add(position, newField);
 	}
+	
+	/** @return the mobileId of this form in the data source 
+	 * This id actually is the database id of the form, but we keep using this function to prevent errors with previous versions 
+	 * */
+	public int getMobileId() {
+		return (int)id;
+	}
 
 	/** @return number of fields that are editable */
 	public int getEditableFieldCount() {
@@ -130,35 +135,36 @@ public class Form implements Serializable {
 		return count;
 	}
 	
-	/** @return {@link #mobileId} */
-	public int getMobileId() {
-		return mobileId;
-	}
-
-	/** @param mobileId new value for {@link #mobileId} */
-	public void setMobileId(int mobileId) {
-		if(this.mobileId != MOBILE_ID_NOT_SET) {
-			throw new IllegalStateException("Cannot set a mobileId that has already been set.");
-		}
-		if(this.permittedGroup == null) {
-			throw new IllegalStateException("Could not finalise form as no group has been set.");
-		}
-		this.mobileId = mobileId;
+	/**
+	 * Set the form as finalised
+	 */
+	public void finalise() {
+		this.finalised = true;
 	}
 
 //> GENERATED CODE
-	/** @see java.lang.Object#hashCode() */
+//	/** @see java.lang.Object#hashCode() */
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+//		result = prime * result + os;
+//		result = prime * result + ((name == null) ? 0 : name.hashCode());
+//		return result;
+//	}
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-		result = prime * result + mobileId;
+		result = prime * result + (finalised ? 1231 : 1237);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
-	/** @see java.lang.Object#equals(java.lang.Object) */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -173,7 +179,7 @@ public class Form implements Serializable {
 				return false;
 		} else if (!fields.equals(other.fields))
 			return false;
-		if (mobileId != other.mobileId)
+		if (finalised != other.finalised)
 			return false;
 		if (name == null) {
 			if (other.name != null)

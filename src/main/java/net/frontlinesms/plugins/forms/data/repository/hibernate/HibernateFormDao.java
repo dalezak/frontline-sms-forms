@@ -3,10 +3,9 @@
  */
 package net.frontlinesms.plugins.forms.data.repository.hibernate;
 
+import java.util.ArrayList;
 import java.util.Collection;
-
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
+import java.util.List;
 
 import net.frontlinesms.data.DuplicateKeyException;
 import net.frontlinesms.data.domain.Contact;
@@ -14,9 +13,13 @@ import net.frontlinesms.data.repository.hibernate.BaseHibernateDao;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
+
 /**
  * Hibernate implementation of {@link FormDao}
- * @author Alex
+ * @author Alex Anderson <alex@frontlinesms.com>
+ * @author Morgan Belkadi <morgan@frontlinesms.com>
  */
 public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao {
 
@@ -27,20 +30,51 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 	}
 	
 	/** @see FormDao#getFormsForUser(Contact, Collection) */
+	@SuppressWarnings("unchecked")
 	public Collection<Form> getFormsForUser(Contact contact, Collection<Integer> currentFormIds) {
-		DetachedCriteria criteria = super.getCriterion();
-		criteria.add(Restrictions.not(Restrictions.eq(Form.FIELD_MOBILE_ID, Form.MOBILE_ID_NOT_SET)));
-		if(currentFormIds != null && currentFormIds.size() > 0) {
-			criteria.add(Restrictions.not(Restrictions.in(Form.FIELD_MOBILE_ID, currentFormIds)));
+		ArrayList<String> parametersNames = new ArrayList<String>();
+		parametersNames.add("finalised");
+		parametersNames.add("contact");
+		
+		ArrayList<Object> parametersValues = new ArrayList<Object>();
+		parametersValues.add(true);
+		parametersValues.add(contact);
+		
+		List<Form> fff = (List<Form>)super.getHibernateTemplate().find("SELECT DISTINCT form FROM Form AS form");
+		for (Form f : fff)
+			System.err.println("FORM: " + f.getName() + " --> " + f.isFinalised());
+		
+		String queryString = "SELECT DISTINCT form" +
+							" FROM Form AS form, GroupMembership AS mem" +
+							" WHERE form." + Form.FIELD_PERMITTED + " = mem.group" +
+							" AND form." + Form.FIELD_FINALISED + " = :finalised" +
+							" AND mem.contact = :contact";
+		
+		if (currentFormIds.size() > 0) {
+			Long[] longFormIds = new Long[currentFormIds.size()];
+			int i = 0;
+			for (Integer integer : currentFormIds)
+				longFormIds[i++] = (long)integer;
+			
+			parametersNames.add("ids");
+			parametersValues.add(longFormIds);
+			queryString += " AND form." + Form.FIELD_ID + " NOT IN (:ids)";
 		}
-		// FIXME here we need to add the restriction that the contact is in the permitted group for this form
-		return super.getList(criteria);
+		
+		System.err.println(queryString);
+		
+		return super.getHibernateTemplate().findByNamedParam(queryString, parametersNames.toArray(new String[parametersNames.size()]), parametersValues.toArray());
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> List<T> getList(Class<T> entityClass, String hqlQuery, Object... values) {
+		return this.getHibernateTemplate().find(hqlQuery, values);
 	}
 
 	/** @see FormDao#getFromMobileId(int) */
-	public Form getFromMobileId(int mobileId) {
+	public Form getFromId(long id) {
 		DetachedCriteria criteria = super.getCriterion();
-		criteria.add(Restrictions.eq(Form.FIELD_MOBILE_ID, mobileId));
+		criteria.add(Restrictions.eq(Form.FIELD_ID, id));
 		return super.getUnique(criteria);
 	}
 	
@@ -73,8 +107,8 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 	/** @see FormDao#finaliseForm(Form) */
 	public void finaliseForm(Form form) throws IllegalStateException {
 		// FIXME calculate the new mobile ID
-		int mobileId = super.countAll() + 1;
-		form.setMobileId(mobileId);
+		form.finalise();
+		
 		try {
 			super.update(form);
 		} catch (DuplicateKeyException e) {

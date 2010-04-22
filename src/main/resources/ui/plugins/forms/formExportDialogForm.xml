@@ -12,7 +12,7 @@
             <button action="showSaveModeFileChooser(tfFilename)" icon="/icons/browse.png" text="i18n.action.browse" weightx="1"/>
         </panel>
         <panel colspan="2" gap="5" halign="center">
-            <button action="formsTab_exportResults(cbAggregate.selected, tfFilename.text, formExportDialog)" halign="right" icon="/icons/export.png" text="i18n.common.export"/>
+           <!-- <button action="formsTab_exportResults(cbAggregate.selected, tfFilename.text, formExportDialog)" halign="right" icon="/icons/export.png" text="i18n.common.export"/> -->
             <button action="removeDialog(formExportDialog)" halign="right" icon="/icons/cross.png" text="i18n.action.cancel"/>
         </panel>
     </panel>

@@ -11,18 +11,18 @@ import java.util.Collection;
  */
 public class NewFormRequest extends FormsRequestDescription {
 	/** IDs of the forms that this user already has. */
-	private final Collection<Integer> currentFormMobileIds;
+	private final Collection<Integer> currentFormIds;
 
 	/**
 	 * Create a new instance of this class.
-	 * @param currentFormMobileIds
+	 * @param currentFormIds
 	 */
-	public NewFormRequest(Collection<Integer> currentFormMobileIds) {
-		this.currentFormMobileIds = currentFormMobileIds;
+	public NewFormRequest(Collection<Integer> currentFormIds) {
+		this.currentFormIds = currentFormIds;
 	}
 	
-	/** @return {@link #currentFormMobileIds} */
-	public Collection<Integer> getCurrentFormMobileIds() {
-		return this.currentFormMobileIds;
+	/** @return {@link #currentFormIds} */
+	public Collection<Integer> getCurrentFormIds() {
+		return this.currentFormIds;
 	}
 }
