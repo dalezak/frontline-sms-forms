@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import net.frontlinesms.data.domain.Message;
 import net.frontlinesms.plugins.forms.data.FormHandlingException;
+import net.frontlinesms.plugins.forms.data.repository.FormDao;
 import net.frontlinesms.plugins.forms.request.FormsRequestDescription;
 import net.frontlinesms.plugins.forms.response.FormsResponseDescription;
 
@@ -47,4 +48,10 @@ public interface FormsMessageHandler {
 	 * @throws FormHandlingException if there was a problem generating the response
 	 */
 	public Collection<Message> handleOutgoingMessage(FormsResponseDescription response) throws FormHandlingException;
+
+	/**
+	 * Initialise the forms message handler, giving it its {@link FormsPluginController}
+	 * @param formsPluginController
+	 */
+	public void init(FormsPluginController formsPluginController);
 }

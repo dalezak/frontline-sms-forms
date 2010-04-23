@@ -4,17 +4,22 @@
 package net.frontlinesms.plugins.forms.ui;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import thinlet.Thinlet;
 
+import net.frontlinesms.FrontlineSMSConstants;
+import net.frontlinesms.csv.CsvExporter;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.ContactDao;
 import net.frontlinesms.data.repository.GroupMembershipDao;
 import net.frontlinesms.plugins.forms.FormsPluginController;
+import net.frontlinesms.plugins.forms.csv.CsvFormExporter;
 import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
@@ -22,6 +27,7 @@ import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.handler.ComponentPagingHandler;
+import net.frontlinesms.ui.handler.ImportExportDialogHandler;
 import net.frontlinesms.ui.handler.PagedComponentItemProvider;
 import net.frontlinesms.ui.handler.PagedListDetails;
 import net.frontlinesms.ui.handler.contacts.GroupSelecterDialog;
@@ -61,7 +67,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String I18N_FORM_SUBMITTER = "form.submitter";
 
 	/** i18n key: "Currency field" */
-	public static final String I18N_FCOMP_CURRENCY = "form.field.currency";
+	public static final String I18N_FCOMP_CURRENCY = "forms.field.currency";
 	public static final String I18N_FCOMP_DROP_DOWN_LIST = "common.dropdownlist";
 	public static final String I18N_FCOMP_MENU_ITEM = "common.menuitem";
 	public static final String I18N_FCOMP_NUMBER = "common.number";
@@ -87,6 +93,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String SENTENCE_UP_KEY = "sentence.up.key";
 	public static final String SENTENCE_DOWN_KEY = "sentence.down.key";
 	
+	private static final String MESSAGE_NO_FILENAME = "message.filename.blank";
+	private static final String MESSAGE_EXPORT_TASK_SUCCESSFUL = "message.export.successful";
+	private static final String MESSAGE_EXPORT_TASK_FAILED = "message.export.failed";
+	private static final String MESSAGE_BAD_DIRECTORY = "message.bad.directory";
+	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = "message.file.overwrite.confirm";
+	
 //> INSTANCE PROPERTIES
 	/** DAO for {@link Contact}s */
 	private ContactDao contactDao;
@@ -101,6 +113,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private Object formResultsComponent;
 	/** Paging handler for the results component */
 	private ComponentPagingHandler formResponseTablePageControls;
+	/** Used to store the confirmation dialog while it is being displayed, so that we can remove it later. */
+	private Object confirmationDialog;
+	
+	private Object exportDialog;
 
 //> CONSTRUCTORS
 	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController ui) {
@@ -114,7 +130,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		
 		// If there was something selected previously, we will attempt to select it again after updating the list
 		Object previousSelectedItem = this.ui.getSelectedItem(formList);
-		Form previousSelectedForm = previousSelectedItem == null ? null : this.ui.getAttachedObject(previousSelectedItem, Form.class);
+		Form previousSelectedForm = previousSelectedItem == null ? null : this.getForm(previousSelectedItem);
 		ui.removeAll(formList);
 		Object newSelectedItem = null;
 		for(Form f : formsDao.getAllForms()) {
@@ -137,7 +153,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 //> THINLET EVENT METHODS
 	/** Show the dialog for exporting form results. */
 	public void showFormExportDialog() {
-		ui.add(ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this));
+		exportDialog = ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this);
+		ui.add(exportDialog);
+	}
+	
+	public void showSaveModeFileChooser (Object textFieldToBeSet) {
+		this.ui.showSaveModeFileChooser(textFieldToBeSet);
 	}
 	
 	/** Show the AWT Forms Editor window */
@@ -155,6 +176,56 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			for(Object selectedComponent : selected) {
 				this.ui.remove(selectedComponent);
 			}
+		}
+	}
+	
+	/**
+	 * Calls the export method according to the supplied information,
+	 * and the user selection.
+	 * 
+	 * @param aggregate
+	 * @param dataPath
+	 * @param exportDialog
+	 */
+	public void formsTab_exportResults(String dataPath) {
+		if (!dataPath.contains(File.separator) || !(new File(dataPath.substring(0, dataPath.lastIndexOf(File.separator))).isDirectory())) {
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_BAD_DIRECTORY));
+		} else if (dataPath.substring(dataPath.lastIndexOf(File.separator), dataPath.length()).equals(File.separator)) {
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_NO_FILENAME));
+		} else {
+			log.debug("Filename is [" + dataPath + "] before [" + CsvExporter.CSV_EXTENSION + "] check.");
+			if (!dataPath.endsWith(CsvExporter.CSV_EXTENSION)) {
+				dataPath += CsvExporter.CSV_EXTENSION;
+			}
+			log.debug("Filename is [" + dataPath + "] after [" + CsvExporter.CSV_EXTENSION + "] check.");
+			
+			File csvFile = new File(dataPath);
+			if(csvFile.exists() && csvFile.isFile()) {
+				// Show confirmation dialog
+				this.confirmationDialog = ui.showConfirmationDialog("doExport('" + dataPath + "')", this, MESSAGE_CONFIRM_FILE_OVERWRITE);
+			} else {
+				doExport(dataPath);
+			}
+		}
+	}
+
+	public void doExport(String filename) {
+		Object formsList = find("formsList");
+		Form selectedForm = getForm(ui.getSelectedItem(formsList));
+		
+		if (selectedForm == null) return;
+		
+		File file = new File(filename);
+		try {
+			CsvFormExporter.exportForm(file, selectedForm, contactDao, formResponseDao);
+			
+			this.ui.setStatus(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_SUCCESSFUL));
+		}
+		catch (IOException e) {
+			log.debug(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED), e);
+			this.ui.alert(InternationalisationUtils.getI18NString(MESSAGE_EXPORT_TASK_FAILED));
+		} finally {
+			removeDialog(exportDialog);
 		}
 	}
 
@@ -183,7 +254,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 */
 	public void formsList_editSelected() {
 		Form selectedForm = getSelectedForm();
-		if (selectedForm != null) {
+		if (selectedForm != null && !selectedForm.isFinalised()) {
 			VisualForm visualForm = VisualForm.getVisualForm(selectedForm);
 			List<PreviewComponent> old = new ArrayList<PreviewComponent>();
 			old.addAll(visualForm.getComponents());
@@ -657,5 +728,13 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		if(fieldType == FormFieldType.TRUNCATED_TEXT) 		return getIcon(FormIcon.TRUNCATED_TEXT);
 		if(fieldType == FormFieldType.WRAPPED_TEXT) 		return getIcon(FormIcon.WRAPPED_TEXT);
 		throw new IllegalStateException("No icon is mapped for field type: " + fieldType);
+	}
+	
+	/**
+	 * Set the DAO for this class
+	 * @param groupMembershipDao
+	 */
+	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
+		this.groupMembershipDao = groupMembershipDao;
 	}
 }

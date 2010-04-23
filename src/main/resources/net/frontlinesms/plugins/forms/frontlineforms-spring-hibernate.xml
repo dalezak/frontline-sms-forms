@@ -13,10 +13,14 @@
 	<context:annotation-config/>
 	<tx:annotation-driven />
 
-	<bean id="formDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormDao">
+	<bean id="formDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormDao" parent="baseHibernateDao">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<bean id="formResponseDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormResponseDao">
 		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="baseHibernateDao" abstract="true" class="net.frontlinesms.data.repository.hibernate">
+		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 </beans>

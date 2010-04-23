@@ -4,8 +4,10 @@
 package net.frontlinesms.plugins.forms.data.repository;
 
 import java.util.Collection;
+import java.util.List;
 
 import net.frontlinesms.data.domain.Contact;
+import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 
 /**
@@ -22,11 +24,11 @@ public interface FormDao {
 	public Collection<Form> getFormsForUser(Contact contact, Collection<Integer> currentFormMobileIds);
 
 	/**
-	 * Get a form from its mobile ID.
-	 * @param mobileId
-	 * @return {@link Form} with the specified mobile id or <code>null</code> if none could be found.
+	 * Get a form from its ID.
+	 * @param id
+	 * @return {@link Form} with the specified id or <code>null</code> if none could be found.
 	 */
-	public Form getFromMobileId(int mobileId);
+	public Form getFromId(long mobileId);
 
 	/**
 	 * Saves a form to the data source.
@@ -49,6 +51,8 @@ public interface FormDao {
 	/** @return all forms saved in the data source */
 	public Collection<Form> getAllForms();
 	
+	/** @return number of forms saved in the data source */
+	public int getCount();
 	
 	/**
 	 * Finalise a form to prevent it being edited again.
