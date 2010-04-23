@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>net.frontlinesms.core</groupId>
 			<artifactId>frontlinesms</artifactId>
-			<version>1.6.08-RC5-SNAPSHOT</version>
+			<version>1.6.08-RC5</version>
 		</dependency>
 		
 		<dependency>
