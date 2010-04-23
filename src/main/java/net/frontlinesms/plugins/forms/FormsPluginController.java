@@ -72,12 +72,16 @@ public class FormsPluginController extends BasePluginController implements Incom
 			this.formResponseDao = (FormResponseDao) applicationContext.getBean("formResponseDao");
 			
 			String handlerClassName = FormsProperties.getInstance().getHandlerClassName();
-			this.formsMessageHandler = (FormsMessageHandler) Class.forName(handlerClassName).newInstance();
-			this.formsMessageHandler.init(this);
+			setHandler(handlerClassName);
 		} catch(Throwable t) {
 			log.warn("Unable to load form handler class.", t);
 			throw new PluginInitialisationException(t);
 		}
+	}
+	
+	void setHandler(String handlerClassName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		this.formsMessageHandler = (FormsMessageHandler) Class.forName(handlerClassName).newInstance();
+		this.formsMessageHandler.init(this);
 	}
 
 //> ACCESSORS

@@ -118,6 +118,15 @@ public class FormsPluginControllerTest extends BaseTestCase {
 		request = new DataSubmissionRequest(submittedFormData);
 		assertEquals(2, controller.handleDataSubmissionRequest(request, CONTACT_OK_MSISDN).getSubmittedData().size());
 	}
+	
+	public void testInit() throws Throwable {
+		// Test bad handler name
+		FormsPluginController controller = new FormsPluginController();
+		try {
+			controller.setHandler("does.not.exist");
+			fail("Should have thrown ClassNotFoundException.");
+		} catch(ClassNotFoundException ex) { /* expected */ }
+	}
 
 	/**
 	 * Create a {@link Form} with a certain number of fields and the given mobileId
