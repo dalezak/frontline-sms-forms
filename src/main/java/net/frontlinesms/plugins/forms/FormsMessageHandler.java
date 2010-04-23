@@ -39,7 +39,7 @@ public interface FormsMessageHandler {
 	 * @return a description of the forms request
 	 * @throws FormHandlingException if there was a problem processing the forms message
 	 */
-	public FormsRequestDescription handleIncomingMessage(Message message, FormDao formDao) throws FormHandlingException;
+	public FormsRequestDescription handleIncomingMessage(Message message) throws FormHandlingException;
 
 	/**
 	 * Get the {@link FormsMessageHandler} to encode the {@link FormsRequestDescription} as text messages.
@@ -48,4 +48,10 @@ public interface FormsMessageHandler {
 	 * @throws FormHandlingException if there was a problem generating the response
 	 */
 	public Collection<Message> handleOutgoingMessage(FormsResponseDescription response) throws FormHandlingException;
+
+	/**
+	 * Initialise the forms message handler, giving it its {@link FormsPluginController}
+	 * @param formsPluginController
+	 */
+	public void init(FormsPluginController formsPluginController);
 }

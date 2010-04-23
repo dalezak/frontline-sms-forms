@@ -73,6 +73,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 			
 			String handlerClassName = FormsProperties.getInstance().getHandlerClassName();
 			this.formsMessageHandler = (FormsMessageHandler) Class.forName(handlerClassName).newInstance();
+			this.formsMessageHandler.init(this);
 		} catch(Throwable t) {
 			log.warn("Unable to load form handler class.", t);
 			throw new PluginInitialisationException(t);
@@ -137,7 +138,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 	/** Process a new message coming into the system. */
 	public void incomingMessageEvent(Message message) {
 		try {
-			FormsRequestDescription request = this.formsMessageHandler.handleIncomingMessage(message, formDao);
+			FormsRequestDescription request = this.formsMessageHandler.handleIncomingMessage(message);
 			
 			FormsResponseDescription response;
 			if(request instanceof DataSubmissionRequest) {
@@ -235,5 +236,12 @@ public class FormsPluginController extends BasePluginController implements Incom
 		for(Contact c : contacts) {
 			this.frontlineController.sendTextMessage(c.getPhoneNumber(), messageContent);
 		}
+	}
+	
+	/**
+	 * @return The {@link FormDao of the plugin controller}
+	 */
+	public FormDao getFormDao() {
+		return formDao;
 	}
 }

@@ -40,10 +40,6 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 		parametersValues.add(true);
 		parametersValues.add(contact);
 		
-		List<Form> fff = (List<Form>)super.getHibernateTemplate().find("SELECT DISTINCT form FROM Form AS form");
-		for (Form f : fff)
-			System.err.println("FORM: " + f.getName() + " --> " + f.isFinalised());
-		
 		String queryString = "SELECT DISTINCT form" +
 							" FROM Form AS form, GroupMembership AS mem" +
 							" WHERE form." + Form.FIELD_PERMITTED + " = mem.group" +
@@ -60,8 +56,6 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 			parametersValues.add(longFormIds);
 			queryString += " AND form." + Form.FIELD_ID + " NOT IN (:ids)";
 		}
-		
-		System.err.println(queryString);
 		
 		return super.getHibernateTemplate().findByNamedParam(queryString, parametersNames.toArray(new String[parametersNames.size()]), parametersValues.toArray());
 	}
