@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import net.frontlinesms.data.domain.Message;
 import net.frontlinesms.plugins.forms.data.FormHandlingException;
+import net.frontlinesms.plugins.forms.data.repository.FormDao;
 import net.frontlinesms.plugins.forms.request.FormsRequestDescription;
 import net.frontlinesms.plugins.forms.response.FormsResponseDescription;
 
@@ -38,7 +39,7 @@ public interface FormsMessageHandler {
 	 * @return a description of the forms request
 	 * @throws FormHandlingException if there was a problem processing the forms message
 	 */
-	public FormsRequestDescription handleIncomingMessage(Message message) throws FormHandlingException;
+	public FormsRequestDescription handleIncomingMessage(Message message, FormDao formDao) throws FormHandlingException;
 
 	/**
 	 * Get the {@link FormsMessageHandler} to encode the {@link FormsRequestDescription} as text messages.

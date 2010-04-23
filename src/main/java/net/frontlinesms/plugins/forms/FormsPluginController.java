@@ -54,7 +54,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 	/** the {@link FormsMessageHandler} for processing incoming and outgoing messages */
 	private FormsMessageHandler formsMessageHandler;
 	/** DAO for forms */
-	private FormDao formsDao;
+	private FormDao formDao;
 	/** DAO for contacts */
 	private ContactDao contactDao;
 	/** DAO for form responses */
@@ -68,7 +68,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 		this.frontlineController.addIncomingMessageListener(this);
 		
 		try {
-			this.formsDao = (FormDao) applicationContext.getBean("formDao");
+			this.formDao = (FormDao) applicationContext.getBean("formDao");
 			this.formResponseDao = (FormResponseDao) applicationContext.getBean("formResponseDao");
 			
 			String handlerClassName = FormsProperties.getInstance().getHandlerClassName();
@@ -102,12 +102,12 @@ public class FormsPluginController extends BasePluginController implements Incom
 	}
 	
 	/**
-	 * Set {@link #formsDao}
-	 * @param formsDao new value for {@link #formsDao}
+	 * Set {@link #formDao}
+	 * @param formsDao new value for {@link #formDao}
 	 */
 	@Required
 	public void setFormsDao(FormDao formsDao) {
-		this.formsDao = formsDao;
+		this.formDao = formsDao;
 	}
 	public void setContactDao(ContactDao contactDao) {
 		this.contactDao = contactDao;
@@ -123,7 +123,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 		FormsThinletTabController tabController = new FormsThinletTabController(this, uiController);
 		tabController.setContactDao(this.frontlineController.getContactDao());
 		tabController.setGroupMembershipDao(this.frontlineController.getGroupMembershipDao());
-		tabController.setFormsDao(formsDao);
+		tabController.setFormsDao(formDao);
 		tabController.setFormResponseDao(formResponseDao);
 
 		Object formsTab = uiController.loadComponentFromFile(XML_FORMS_TAB, tabController);
@@ -137,7 +137,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 	/** Process a new message coming into the system. */
 	public void incomingMessageEvent(Message message) {
 		try {
-			FormsRequestDescription request = this.formsMessageHandler.handleIncomingMessage(message);
+			FormsRequestDescription request = this.formsMessageHandler.handleIncomingMessage(message, formDao);
 			
 			FormsResponseDescription response;
 			if(request instanceof DataSubmissionRequest) {
@@ -184,7 +184,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 		/** List of data IDs of the successfully processed responses */
 		Collection<SubmittedFormData> dataIds = new HashSet<SubmittedFormData>();
 		for(SubmittedFormData submittedData : request.getSubmittedData()) {
-			Form form = this.formsDao.getFromId(submittedData.getFormId());
+			Form form = this.formDao.getFromId(submittedData.getFormId());
 			if(form == null) {
 				log.warn("No form found for submitted data with dataId: " + submittedData.getDataId());
 				continue;
@@ -216,7 +216,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 			// This contact is not known, so there cannot be any forms available for him
 			return null;
 		} else {
-			Collection<Form> newForms = this.formsDao.getFormsForUser(contact, ((NewFormRequest)request).getCurrentFormIds());
+			Collection<Form> newForms = this.formDao.getFormsForUser(contact, ((NewFormRequest)request).getCurrentFormIds());
 			return new NewFormsResponse(contact, newForms);
 		}
 	}

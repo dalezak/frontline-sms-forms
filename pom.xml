@@ -92,12 +92,7 @@
 			<version>1.6.08-RC4-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.masabi.frontlinesms.plugins</groupId>
-			<artifactId>masabi-frontlinesms-plugin-formscodec</artifactId>
-			<version>0.02.00</version>
-			<!-- This is actually only required at runtime, but is included in the compile scope to ensure that other projects will pick up this jar -->
-		</dependency>
+
 		
 		<dependency>
 			<groupId>net.frontlinesms.core</groupId>

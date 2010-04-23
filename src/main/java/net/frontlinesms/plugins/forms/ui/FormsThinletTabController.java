@@ -130,7 +130,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		
 		// If there was something selected previously, we will attempt to select it again after updating the list
 		Object previousSelectedItem = this.ui.getSelectedItem(formList);
-		Form previousSelectedForm = previousSelectedItem == null ? null : this.ui.getAttachedObject(previousSelectedItem, Form.class);
+		Form previousSelectedForm = previousSelectedItem == null ? null : this.getForm(previousSelectedItem);
 		ui.removeAll(formList);
 		Object newSelectedItem = null;
 		for(Form f : formsDao.getAllForms()) {
