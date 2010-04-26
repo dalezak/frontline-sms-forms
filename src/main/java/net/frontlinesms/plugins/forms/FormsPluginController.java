@@ -3,6 +3,7 @@
  */
 package net.frontlinesms.plugins.forms;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +15,6 @@ import net.frontlinesms.FrontlineSMS;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Message;
 import net.frontlinesms.data.repository.ContactDao;
-import net.frontlinesms.events.EventObserver;
 import net.frontlinesms.listener.IncomingMessageListener;
 import net.frontlinesms.plugins.BasePluginController;
 import net.frontlinesms.plugins.PluginController;
@@ -34,6 +34,7 @@ import net.frontlinesms.plugins.forms.response.FormsResponseDescription;
 import net.frontlinesms.plugins.forms.response.NewFormsResponse;
 import net.frontlinesms.plugins.forms.response.SubmittedDataResponse;
 import net.frontlinesms.plugins.forms.ui.FormsThinletTabController;
+import net.frontlinesms.resources.ClasspathPropertySet;
 import net.frontlinesms.ui.UiGeneratorController;
 
 /**
@@ -85,6 +86,11 @@ public class FormsPluginController extends BasePluginController implements Incom
 	}
 
 //> ACCESSORS
+	/** @return {@link #formsMessageHandler} */
+	public FormsMessageHandler getHandler() {
+		return this.formsMessageHandler;
+	}
+	
 	/** @return {@link #frontlineController} */
 	public FrontlineSMS getFrontlineController() {
 		return this.frontlineController;

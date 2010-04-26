@@ -151,6 +151,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 //> THINLET EVENT METHODS
+	public void showFormsPluginInfo() {
+		FormsAboutDialogHandler.createAndShow(this.ui, this.getPluginController());
+	}
+	
 	/** Show the dialog for exporting form results. */
 	public void showFormExportDialog() {
 		exportDialog = ui.loadComponentFromFile(UI_FILE_FORM_EXPORT_DIALOG, this);

@@ -24,6 +24,7 @@
 		        		<button name="btSend" action="formsList_sendSelected" icon="/icons/big_form_send.png" text="i18n.common.send" weightx="1" enabled="false"/>
 		        	</panel>
 		        </panel>
+		        <button action="showFormsPluginInfo" icon="/icons/about.png" text="i18n.plugin.forms.about" halign="right"/>
 		    </panel>
 	        <panel name="pnRight" columns="1">
 		    </panel>
