@@ -34,8 +34,9 @@ import net.frontlinesms.plugins.forms.response.FormsResponseDescription;
 import net.frontlinesms.plugins.forms.response.NewFormsResponse;
 import net.frontlinesms.plugins.forms.response.SubmittedDataResponse;
 import net.frontlinesms.plugins.forms.ui.FormsThinletTabController;
-import net.frontlinesms.resources.ClasspathPropertySet;
 import net.frontlinesms.ui.UiGeneratorController;
+import net.frontlinesms.ui.i18n.InternationalisationUtils;
+import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
 
 /**
  * Controller for the FrontlineForms plugin.
@@ -44,10 +45,14 @@ import net.frontlinesms.ui.UiGeneratorController;
 @PluginControllerProperties(name="Forms", iconPath="/icons/form.png",
 		springConfigLocation="classpath:net/frontlinesms/plugins/forms/frontlineforms-spring-hibernate.xml",
 		hibernateConfigPath="classpath:net/frontlinesms/plugins/forms/frontlineforms.hibernate.cfg.xml")
+@TextResourceKeyOwner
 public class FormsPluginController extends BasePluginController implements IncomingMessageListener {
 //> CONSTANTS
 	/** Filename and path of the XML for the FrontlineForms tab. */
 	private static final String XML_FORMS_TAB = "/ui/plugins/forms/formsTab.xml";
+	
+	/** I18n Text key: SMS text: "There is a new form available: xyz" */
+	private static final String I18N_NEW_FORMS_SMS = "sms.form.available";
 	
 //> INSTANCE PROPERTIES
 	/** the {@link FrontlineSMS} instance that this plugin is attached to */
@@ -238,12 +243,10 @@ public class FormsPluginController extends BasePluginController implements Incom
 	 * @param contacts the contacts to send the form to
 	 */
 	public void sendForm(Form form, Collection<Contact> contacts) {
-		// TODO if it is possible, we could send forms directly to people here
 		// Send a text SMS to each contact informing them that a new form is available.
-		
-		// FIXME i18n this
-		String messageContent = "There is a new form available: " + form.getName();
+		String messageContent = InternationalisationUtils.getI18NString(I18N_NEW_FORMS_SMS, form.getName());
 		for(Contact c : contacts) {
+			// TODO if it is possible, we could send forms directly to people here
 			this.frontlineController.sendTextMessage(c.getPhoneNumber(), messageContent);
 		}
 	}

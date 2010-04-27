@@ -5,7 +5,7 @@
     
     	<label text="Version:"/><label name="plugin.forms.plugin.version"/>
     	<label text="Handler:"/><label name="plugin.forms.handler.class"/>
-    	<label text="Handler:"/><label name="plugin.forms.handler.version"/>
+    	<label text="Handler version:"/><label name="plugin.forms.handler.version"/>
     	
     	<button icon="/icons/phone.png" type="link" text="Download the Forms mobile application" tooltip="http://forms.frontlinesms.com" action="openBrowser(this.tooltip)" colspan="2" halign="left"/>
     	<button text="FrontlineForms is originally by Masabi" type="link" tooltip="http://www.masabi.com" action="openBrowser(this.tooltip)" colspan="2" halign="right"/>

@@ -12,7 +12,6 @@ import java.util.List;
 
 import thinlet.Thinlet;
 
-import net.frontlinesms.FrontlineSMSConstants;
 import net.frontlinesms.csv.CsvExporter;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
@@ -27,7 +26,6 @@ import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.handler.ComponentPagingHandler;
-import net.frontlinesms.ui.handler.ImportExportDialogHandler;
 import net.frontlinesms.ui.handler.PagedComponentItemProvider;
 import net.frontlinesms.ui.handler.PagedListDetails;
 import net.frontlinesms.ui.handler.contacts.GroupSelecterDialog;
@@ -65,6 +63,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String I18N_KEY_NO_CONTACTS_TO_NOTIFY = "forms.send.nocontacts";
 	/** i18n key: "Form submitter" */
 	public static final String I18N_FORM_SUBMITTER = "form.submitter";
+	/** i18n key: "Your form 'formname' has been sent to N contacts." */
+	private static final String I18N_FORM_SENT_DIALOG_MESSAGE = "message.form.sent";
 
 	/** i18n key: "Currency field" */
 	public static final String I18N_FCOMP_CURRENCY = "forms.field.currency";
@@ -113,8 +113,6 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private Object formResultsComponent;
 	/** Paging handler for the results component */
 	private ComponentPagingHandler formResponseTablePageControls;
-	/** Used to store the confirmation dialog while it is being displayed, so that we can remove it later. */
-	private Object confirmationDialog;
 	
 	private Object exportDialog;
 
@@ -206,7 +204,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			File csvFile = new File(dataPath);
 			if(csvFile.exists() && csvFile.isFile()) {
 				// Show confirmation dialog
-				this.confirmationDialog = ui.showConfirmationDialog("doExport('" + dataPath + "')", this, MESSAGE_CONFIRM_FILE_OVERWRITE);
+				ui.showConfirmationDialog("doExport('" + dataPath + "')", this, MESSAGE_CONFIRM_FILE_OVERWRITE);
 			} else {
 				doExport(dataPath);
 			}
@@ -398,8 +396,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			// Issue the send command to the plugin controller
 			this.getPluginController().sendForm(form, selectedContacts);
 
-			// FIXME i18n
-			ui.alert("Your form '" + form.getName() + "' has been sent to " + selectedContacts.size() + " contacts.");
+			ui.alert(InternationalisationUtils.getI18NString(I18N_FORM_SENT_DIALOG_MESSAGE, form.getName(), Integer.toString(selectedContacts.size())));
 			
 			ui.removeDialog(dgChooseContacts);
 		}
