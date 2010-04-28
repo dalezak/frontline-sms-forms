@@ -4,10 +4,12 @@
 package net.frontlinesms.plugins.forms.data.repository;
 
 import java.util.Collection;
-import java.util.List;
+
+import javax.persistence.Entity;
 
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
+import net.frontlinesms.data.domain.Message;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 
 /**
@@ -60,4 +62,7 @@ public interface FormDao {
 	 * @throws IllegalStateException If the form could not be finalised, either because it has no group set, or because the data source has run out of mobile IDs
 	 */
 	public void finaliseForm(Form form) throws IllegalStateException;
+
+	/** Remove all references to a {@link Group} from {@link Entity}s in the Forms plugin. */
+	public void dereferenceGroup(Group group);
 }

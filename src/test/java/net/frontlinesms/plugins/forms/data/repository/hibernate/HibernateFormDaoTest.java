@@ -20,6 +20,7 @@ import net.frontlinesms.plugins.forms.request.NewFormRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Test class for {@link HibernateFormDao}
@@ -112,7 +113,55 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		// Test with the last contact, but deleting the form it was still registered one. Shouldn't return any form.
 		assertEquals(0, this.formDao.getFormsForUser(contactThree, request.getCurrentFormIds()).size());
 	}
+
+	public void testDereferenceGroup() throws DuplicateKeyException {
+		Group group1 = new Group(new Group(null, null), "Test group");
+		this.groupDao.saveGroup(group1);
+		
+		Group group2 = new Group(group1, "Test child group A");
+		this.groupDao.saveGroup(group2);
+		
+		Group group3 = new Group(group1, "Test child group B");
+		this.groupDao.saveGroup(group3);
+
+		Form form1 = new Form("Test form 1");
+		form1.setPermittedGroup(group1);
+		this.formDao.saveForm(form1);
+
+		Form form2 = new Form("Test form 2");
+		form2.setPermittedGroup(group2);
+		this.formDao.saveForm(form2);
+
+		Form form3 = new Form("Test form 3");
+		form3.setPermittedGroup(group3);
+		this.formDao.saveForm(form3);
+
+		// check that deleting the groups will fail
+		try {
+			this.groupDao.deleteGroup(group1, false);
+			fail("Should not be able to delete a group that is attached to a form.");
+		} catch(DataIntegrityViolationException ex) { /* expected */ }
+		try {
+			this.groupDao.deleteGroup(group2, false);
+			fail("Should not be able to delete a group that is attached to a form.");
+		} catch(DataIntegrityViolationException ex) { /* expected */ }
+		try {
+			this.groupDao.deleteGroup(group3, false);
+			fail("Should not be able to delete a group that is attached to a form.");
+		} catch(DataIntegrityViolationException ex) { /* expected */ }
+		
+		// check that dereferencing the groups and THEN deleting them will succeed
+		this.formDao.dereferenceGroup(group2);
+		this.groupDao.deleteGroup(group2, false); // this group has no children
+		this.formDao.dereferenceGroup(group1);
+		this.groupDao.deleteGroup(group1, false); // this group has one child now
+	}		
 	
+	public void testDereferenceMessage() {
+		
+	}
+	
+//> HELPER METHODS
 	/** Creates a new contact with a given name, and a generated phone number. */
 	private Contact createContact(String name, Group ... groups) {
 		// Generate a random phone number, as we won't be testing with this  TODO we may be testing with phone number at a later date

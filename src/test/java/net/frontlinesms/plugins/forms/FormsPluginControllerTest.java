@@ -9,18 +9,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mockito.internal.verification.NoMoreInteractions;
-import org.mockito.internal.verification.api.VerificationMode;
+import org.springframework.context.ApplicationContext;
 
+import net.frontlinesms.FrontlineSMS;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
+import net.frontlinesms.data.events.EntityDeleteWarning;
 import net.frontlinesms.data.repository.ContactDao;
-import net.frontlinesms.data.repository.GroupDao;
+import net.frontlinesms.events.EventBus;
 import net.frontlinesms.junit.BaseTestCase;
+import net.frontlinesms.plugins.PluginInitialisationException;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.domain.FormField;
 import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
-import net.frontlinesms.plugins.forms.data.domain.FormResponse;
 import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
@@ -28,7 +29,6 @@ import net.frontlinesms.plugins.forms.request.DataSubmissionRequest;
 import net.frontlinesms.plugins.forms.request.NewFormRequest;
 import net.frontlinesms.plugins.forms.request.SubmittedFormData;
 import net.frontlinesms.plugins.forms.response.NewFormsResponse;
-import net.frontlinesms.plugins.forms.response.SubmittedDataResponse;
 
 public class FormsPluginControllerTest extends BaseTestCase {
 	private static final String UNREGISTERED_MSISDN = "+44123456879";
@@ -42,6 +42,7 @@ public class FormsPluginControllerTest extends BaseTestCase {
 	private static final Collection<Integer> NO_FORM_IDS = Collections.emptySet();
 	private static final Collection<Form> COLLECTION_NO_FORMS = Collections.emptySet();
 
+	@SuppressWarnings("unchecked")
 	public void testHandleNewFormRequest() {
 		FormsPluginController controller = new FormsPluginController();
 
@@ -66,8 +67,6 @@ public class FormsPluginControllerTest extends BaseTestCase {
 		
 		NewFormsResponse responseNoForms = controller.handleNewFormRequest(request, CONTACT_WITH_NO_FORMS_MSISDN);
 		assertEquals("No forms should be sent back to an contact unregistered for this form", 0, responseNoForms.getNewForms().size());
-		
-		
 	}
 	
 	public void testHandleDataSubmissionRequest() {
@@ -119,7 +118,7 @@ public class FormsPluginControllerTest extends BaseTestCase {
 		assertEquals(2, controller.handleDataSubmissionRequest(request, CONTACT_OK_MSISDN).getSubmittedData().size());
 	}
 	
-	public void testInit() throws Throwable {
+	public void testSetHandler() throws Exception {
 		// Test bad handler name
 		FormsPluginController controller = new FormsPluginController();
 		try {
@@ -127,7 +126,44 @@ public class FormsPluginControllerTest extends BaseTestCase {
 			fail("Should have thrown ClassNotFoundException.");
 		} catch(ClassNotFoundException ex) { /* expected */ }
 	}
+	
+	public void testInit() throws PluginInitialisationException {
+		// Test that the controller registers itself with the event bus
+		FormsPluginController controller = new FormsPluginController();
+		
+		FrontlineSMS mockFrontlineSms = mock(FrontlineSMS.class);
+		
+		ApplicationContext mockApplicationContext = mock(ApplicationContext.class);
+		EventBus mockEventBus = mock(EventBus.class);
+		when(mockApplicationContext.getBean("eventBus")).thenReturn(mockEventBus);
 
+		try {
+			controller.init(mockFrontlineSms , mockApplicationContext);
+			fail("Should have thrown exception due to missing form handler.");
+		} catch(PluginInitialisationException ex) { /* expected as no form handler available */ }
+
+		verify(mockApplicationContext).getBean("formDao");
+		verify(mockApplicationContext).getBean("formResponseDao");
+		verify(mockApplicationContext).getBean("eventBus");
+		verify(mockEventBus).registerObserver(controller);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void testNotify() {
+		FormsPluginController controller = new FormsPluginController();
+		FormDao mockFormDao = mock(FormDao.class);
+		controller.setFormsDao(mockFormDao);
+		
+		Group mockGroup = mock(Group.class);
+		EntityDeleteWarning<Group> mockWarning = mock(EntityDeleteWarning.class);
+		when(mockWarning.getDatabaseEntity()).thenReturn(mockGroup);
+		
+		controller.notify(mockWarning);
+		
+		verify(mockFormDao).dereferenceGroup(mockGroup);
+	}
+	
+//> HELPER METHODS
 	/**
 	 * Create a {@link Form} with a certain number of fields and the given mobileId
 	 * @param numberOfFields

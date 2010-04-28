@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.frontlinesms.data.DuplicateKeyException;
 import net.frontlinesms.data.domain.Contact;
+import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.hibernate.BaseHibernateDao;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
@@ -100,7 +101,6 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 
 	/** @see FormDao#finaliseForm(Form) */
 	public void finaliseForm(Form form) throws IllegalStateException {
-		// FIXME calculate the new mobile ID
 		form.finalise();
 		
 		try {
@@ -108,5 +108,13 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 		} catch (DuplicateKeyException e) {
 			throw new RuntimeException("This mobile ID has already been set.");
 		}
+	}
+	
+	public void dereferenceGroup(Group group) {
+		String queryString = "UPDATE Form SET " + Form.FIELD_PERMITTED + "=NULL" +
+				" WHERE (" + Form.FIELD_PERMITTED + "=?" +
+						" OR permittedGroup.path LIKE ?)";
+		String childPathLike = group.getPath() + Group.PATH_SEPARATOR + "%";
+		super.getHibernateTemplate().bulkUpdate(queryString, new Object[]{group, childPathLike});
 	}
 }
