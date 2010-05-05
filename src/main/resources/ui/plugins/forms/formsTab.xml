@@ -1,9 +1,9 @@
-<tab icon="/icons/big_form.png" text="i18n.common.forms" name=":forms">
+<tab icon="/icons/big_form.png" text="i18n.plugins.forms.forms" name=":forms">
     <panel bottom="9" columns="2" gap="9" left="9" right="9" top="9" weightx="1" weighty="1">
     	<label icon="/icons/header/formManager.png" valign="top" />
 		 <splitpane divider="400" weightx="1" weighty="1" rowspan="2">
         	<panel columns="1" weighty="1" weightx="1" gap="8">
-		        <panel rowspan="2" border="true" bottom="4" columns="1" gap="8" icon="/icons/form.png" left="4" right="4" text="i18n.common.forms" top="4" weightx="1" weighty="1">
+		        <panel rowspan="2" border="true" bottom="4" columns="1" gap="8" icon="/icons/form.png" left="4" right="4" text="i18n.plugins.forms.forms" top="4" weightx="1" weighty="1">
 		        	<tree delete="showConfirmationDialog('deleteSelected')" action="formsList_selectionChanged" perform="formsList_editSelected" name="formsList" weightx="1" weighty="1">
 		        		<popupmenu name="formsList_popupmenu" menushown="formsTab_enabledFields">
 		        			<menuitem action="showFormsEditor" icon="/icons/form_add.png" name="miNew" text="i18n.action.new" />
@@ -24,7 +24,7 @@
 		        		<button name="btSend" action="formsList_sendSelected" icon="/icons/big_form_send.png" text="i18n.common.send" weightx="1" enabled="false"/>
 		        	</panel>
 		        </panel>
-		        <button action="showFormsPluginInfo" icon="/icons/about.png" text="i18n.plugin.forms.about" halign="right"/>
+		        <button action="showFormsPluginInfo" icon="/icons/about.png" text="i18n.plugins.forms.about" halign="right"/>
 		    </panel>
 	        <panel name="pnRight" columns="1">
 		    </panel>

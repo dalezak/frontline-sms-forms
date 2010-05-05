@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<dialog closable="true" bottom="5" close="removeDialog" columns="3" font="bold" gap="5" icon="/icons/about.png" left="5" modal="true" right="5" text="i18n.plugin.forms.about" top="5">
+<dialog closable="true" bottom="5" close="removeDialog" columns="3" font="bold" gap="5" icon="/icons/about.png" left="5" modal="true" right="5" text="i18n.plugins.forms.about" top="5">
     <panel bottom="5" columns="2" gap="10" left="5" right="5" top="5">
     	<label text="FrontlineForms plugin." colspan="2"/>
     

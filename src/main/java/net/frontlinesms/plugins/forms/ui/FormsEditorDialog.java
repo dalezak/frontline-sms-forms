@@ -22,7 +22,6 @@ package net.frontlinesms.plugins.forms.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Image;
@@ -32,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.Method;
-import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,7 +42,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import net.frontlinesms.FrontlineSMSConstants;
 import net.frontlinesms.Utils;
 import net.frontlinesms.plugins.forms.ui.components.FComponent;
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
@@ -68,7 +65,7 @@ public class FormsEditorDialog extends JDialog {
 	private VisualForm current;
 	private JTextField tfFormName;
 	
-	private static final String COMMON_PROPERTIES = "common.properties";
+	private static final String COMMON_PROPERTIES = "plugins.forms.properties";
 	
 	public FormsEditorDialog(Frame owner) {
 		super(owner, "FrontlineSMS - " + InternationalisationUtils.getI18NString(FormsThinletTabController.I18N_KEY_FORMS_EDITOR), true);
