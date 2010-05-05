@@ -62,7 +62,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	/** i18n key: "There are no contacts to notify." */
 	private static final String I18N_KEY_NO_CONTACTS_TO_NOTIFY = "forms.send.nocontacts";
 	/** i18n key: "Form submitter" */
-	public static final String I18N_FORM_SUBMITTER = "form.submitter";
+	public static final String I18N_FORM_SUBMITTER = "common.submitter";
 	/** i18n key: "Your form 'formname' has been sent to N contacts." */
 	private static final String I18N_FORM_SENT_DIALOG_MESSAGE = "message.form.sent";
 
