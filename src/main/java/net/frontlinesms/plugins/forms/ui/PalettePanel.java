@@ -27,13 +27,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import org.apache.log4j.Logger;
-
 import net.frontlinesms.Utils;
-import net.frontlinesms.plugins.forms.data.domain.FormField;
 import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
-import net.frontlinesms.plugins.forms.ui.components.*;
+import net.frontlinesms.plugins.forms.ui.components.FComponent;
+import net.frontlinesms.plugins.forms.ui.components.PaletteComponent;
+import net.frontlinesms.ui.FrontlineUI;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class represents the Palette.
@@ -47,7 +48,12 @@ public class PalettePanel extends JPanel {
 	
 	public PalettePanel(DragListener dragListener, DragSource source) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBorder(new TitledBorder(InternationalisationUtils.getI18NString(FormsThinletTabController.COMMON_PALETTE)));
+		
+		// We have to set the correct font for some languages
+		TitledBorder titledBorder = new TitledBorder(InternationalisationUtils.getI18NString(FormsThinletTabController.COMMON_PALETTE));
+		titledBorder.setTitleFont(FrontlineUI.currentResourceBundle.getFont());
+		
+		setBorder(titledBorder);
 		for (FormFieldType fieldType : FormFieldType.values()) {
 			Class<? extends FComponent> clazz = FComponent.getComponentClass(fieldType);
 			FComponent c;
@@ -73,6 +79,7 @@ public class PalettePanel extends JPanel {
 	private PaletteComponent getComponent(FComponent c) {
 		PaletteComponent label = new PaletteComponent(c.getDescription());
 		label.setIcon(new ImageIcon(Utils.getImage("/icons/components/" + c.getIcon(), getClass())));
+		label.setFont(FrontlineUI.currentResourceBundle.getFont());
 		label.setComponent(c);
 		return label;
 	}

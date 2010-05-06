@@ -46,6 +46,7 @@ import net.frontlinesms.Utils;
 import net.frontlinesms.plugins.forms.ui.components.FComponent;
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
 import net.frontlinesms.plugins.forms.ui.components.VisualForm;
+import net.frontlinesms.ui.FrontlineUI;
 import net.frontlinesms.ui.SimpleConstraints;
 import net.frontlinesms.ui.SimpleLayout;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
@@ -71,7 +72,6 @@ public class FormsEditorDialog extends JDialog {
 		super(owner, "FrontlineSMS - " + InternationalisationUtils.getI18NString(FormsThinletTabController.I18N_KEY_FORMS_EDITOR), true);
 		propertiesTable = new PropertiesTable();
 		
-		
 		// Make the content scrollable
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BorderLayout());
@@ -90,7 +90,14 @@ public class FormsEditorDialog extends JDialog {
 		pnDrawing = new DrawingPanel();
 		innerContentPane.add(pnDrawing, new SimpleConstraints(0, 0, 500, 580));
 		JScrollPane sp = new JScrollPane(propertiesTable);
-		sp.setBorder(new TitledBorder(InternationalisationUtils.getI18NString(COMMON_PROPERTIES)));
+		sp.setFont(FrontlineUI.currentResourceBundle.getFont());
+		
+		
+		// We have to set the correct font for some languages
+		TitledBorder titledBorder = new TitledBorder(InternationalisationUtils.getI18NString(COMMON_PROPERTIES));
+		titledBorder.setTitleFont(FrontlineUI.currentResourceBundle.getFont());
+		sp.setBorder(titledBorder);
+		
 		innerContentPane.add(sp, new SimpleConstraints(510, 0, 280, 580));
 		
 		tfFormName = new JTextField();
@@ -100,19 +107,25 @@ public class FormsEditorDialog extends JDialog {
 			}
 		});
 		JLabel formName = new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.I18N_KEY_FORM_NAME) + ": ");
+		//formName.setFont(FrontlineUI.currentResourceBundle.getFont());
 		formName.setIcon(new ImageIcon(Utils.getImage("/icons/form.png", getClass())));
+		
 		FontMetrics m = formName.getFontMetrics(formName.getFont());
 		int width = m.stringWidth(formName.getText()) + formName.getIcon().getIconWidth();
 		innerContentPane.add(formName, new SimpleConstraints(160, 590));
 		innerContentPane.add(tfFormName, new SimpleConstraints(160 + width + 20, 588, 200, null));
 		
 		JButton btSave = new JButton(InternationalisationUtils.getI18NString(ACTION_SAVE), new ImageIcon(Utils.getImage("/icons/tick.png", getClass())));
+		btSave.setFont(FrontlineUI.currentResourceBundle.getFont());
+		
 		btSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				save();
 			}
 		});
 		JButton btCancel = new JButton(InternationalisationUtils.getI18NString(ACTION_CANCEL), new ImageIcon(Utils.getImage("/icons/cross.png", getClass())));
+		btCancel.setFont(FrontlineUI.currentResourceBundle.getFont());
+		
 		btCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cancel();

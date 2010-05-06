@@ -75,7 +75,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String I18N_FCOMP_TEXT_AREA = "plugins.forms.field.textarea";
 	public static final String I18N_FCOMP_TEXT_FIELD = "plugins.forms.field.textfield";
 	public static final String I18N_FCOMP_CHECKBOX = "plugins.forms.field.checkbox";
-	public static final String I18N_FCOMP_TIME = "plugins.forms.field.time";
+	public static final String I18N_FCOMP_TIME = "common.time";
 	public static final String I18N_FCOMP_TRUNCATED_TEXT = "plugins.forms.field.truncatedtext";
 	public static final String I18N_FCOMP_WRAPPED_TEXT = "plugins.forms.field.wrappedtext";
 

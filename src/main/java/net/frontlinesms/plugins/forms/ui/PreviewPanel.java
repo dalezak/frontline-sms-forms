@@ -37,6 +37,7 @@ import javax.swing.border.TitledBorder;
 
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
 import net.frontlinesms.plugins.forms.ui.components.VisualForm;
+import net.frontlinesms.ui.FrontlineUI;
 import net.frontlinesms.ui.SimpleConstraints;
 import net.frontlinesms.ui.SimpleLayout;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
@@ -59,7 +60,12 @@ public class PreviewPanel extends JPanel implements MouseListener, KeyListener {
 	
 	public PreviewPanel(DragListener dragListener, DragSource dragSource) {
 		setLayout(new SimpleLayout());
-		setBorder(new TitledBorder(InternationalisationUtils.getI18NString(FormsThinletTabController.COMMON_PREVIEW)));
+		
+		// We have to set the correct font for some languages
+		TitledBorder titledBorder = new TitledBorder(InternationalisationUtils.getI18NString(FormsThinletTabController.COMMON_PREVIEW));
+		titledBorder.setTitleFont(FrontlineUI.currentResourceBundle.getFont());
+		setBorder(titledBorder);
+		
 		this.addMouseListener(this);
 		this.addKeyListener(this);
 		this.dragListener = dragListener;
