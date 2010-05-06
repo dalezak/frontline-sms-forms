@@ -71,6 +71,7 @@ public class FormsEditorDialog extends JDialog {
 		super(owner, "FrontlineSMS - " + InternationalisationUtils.getI18NString(FormsThinletTabController.I18N_KEY_FORMS_EDITOR), true);
 		propertiesTable = new PropertiesTable();
 		
+		
 		// Make the content scrollable
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BorderLayout());
