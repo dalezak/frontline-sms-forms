@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<dialog closable="true" bottom="5" close="removeDialog" columns="3" font="bold" gap="5" icon="/icons/about.png" left="5" modal="true" right="5" text="i18n.plugin.forms.about" top="5">
+<dialog closable="true" bottom="5" close="removeDialog" columns="3" font="bold" gap="5" icon="/icons/about.png" left="5" modal="true" right="5" text="i18n.plugins.forms.about" top="5">
     <panel bottom="5" columns="2" gap="10" left="5" right="5" top="5">
     	<label text="FrontlineForms plugin." colspan="2"/>
     
-    	<label text="Version:"/><label name="plugin.forms.plugin.version"/>
+    	<label text="Plugin version:"/><label name="plugin.forms.plugin.version"/>
     	<label text="Handler:"/><label name="plugin.forms.handler.class"/>
     	<label text="Handler version:"/><label name="plugin.forms.handler.version"/>
     	
-    	<button icon="/icons/phone.png" type="link" text="Download the Forms mobile application" tooltip="http://forms.frontlinesms.com" action="openBrowser(this.tooltip)" colspan="2" halign="left"/>
-    	<button text="FrontlineForms is originally by Masabi" type="link" tooltip="http://www.masabi.com" action="openBrowser(this.tooltip)" colspan="2" halign="right"/>
+    	<button icon="/icons/phone.png" type="link" text="i18n.plugins.forms.download.forms.application" tooltip="http://forms.frontlinesms.com" action="openBrowser(this.tooltip)" colspan="2" halign="left"/>
+    	<button text="i18n.plugins.forms.originally.masabi" type="link" tooltip="http://www.masabi.com" action="openBrowser(this.tooltip)" colspan="2" halign="right"/>
     	<button colspan="2" action="removeDialog" icon="/icons/tick.png" text="i18n.action.ok" halign="center"/>
     </panel>
 </dialog>

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import net.frontlinesms.FrontlineSMSConstants;
 import net.frontlinesms.csv.CsvExporter;
 import net.frontlinesms.csv.CsvUtils;
 import net.frontlinesms.csv.Utf8FileWriter;
@@ -18,9 +19,6 @@ import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
 
 public class CsvFormExporter extends CsvExporter {
-	
-	private static final String COMMON_CONTACT_NAME = "common.contact.name";
-	private static final String COMMON_CONTACT_PHONE_NUMBER = "common.contact.phone.number";
 
 	/**
 	 * Exports results of the supplied form to the supplied file.
@@ -57,8 +55,8 @@ public class CsvFormExporter extends CsvExporter {
 	 */
 	private static String[] getColumnsNameAsStringArray (Form toExport) {
 		LinkedList<String> columnsName = new LinkedList<String>(); 
-		columnsName.add(InternationalisationUtils.getI18NString(COMMON_CONTACT_NAME));
-		columnsName.add(InternationalisationUtils.getI18NString(COMMON_CONTACT_PHONE_NUMBER)); 
+		columnsName.add(InternationalisationUtils.getI18NString(FrontlineSMSConstants.COMMON_CONTACT_NAME));
+		columnsName.add(InternationalisationUtils.getI18NString(FrontlineSMSConstants.COMMON_PHONE_NUMBER)); 
 		
 		for (FormField field : toExport.getFields()) {
 			if (field.getType().hasValue()) {

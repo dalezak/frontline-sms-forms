@@ -37,6 +37,7 @@ import net.frontlinesms.Utils;
 import net.frontlinesms.plugins.forms.ui.components.PaletteComponent;
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
 import net.frontlinesms.plugins.forms.ui.components.VisualForm;
+import net.frontlinesms.ui.FrontlineUI;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.SimpleConstraints;
 import net.frontlinesms.ui.SimpleLayout;
@@ -73,12 +74,18 @@ public class DrawingPanel extends JPanel {
 		bin.setToolTipText(InternationalisationUtils.getI18NString(FormsThinletTabController.TOOLTIP_DRAG_TO_REMOVE));
 		add(bin, new SimpleConstraints(470, HEIGHT - 40));
 		
-		add(new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_DELETE_KEY) + "."),
-				new SimpleConstraints(255, HEIGHT - 47));
-		add(new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_UP_KEY) + "."),
-				new SimpleConstraints(255, HEIGHT - 32));
-		add(new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_DOWN_KEY) + "."),
-				new SimpleConstraints(255, HEIGHT - 17));
+		JLabel labelSentenceDeleteKey = new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_DELETE_KEY) + ".");
+		JLabel labelSentenceUpKey = new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_UP_KEY) + ".");
+		JLabel labelSentenceDownKey = new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.SENTENCE_DOWN_KEY) + ".");
+		
+		// We have to set the correct font for some languages
+		labelSentenceDeleteKey.setFont(FrontlineUI.currentResourceBundle.getFont());
+		labelSentenceUpKey.setFont(FrontlineUI.currentResourceBundle.getFont());
+		labelSentenceDownKey.setFont(FrontlineUI.currentResourceBundle.getFont());
+		
+		add(labelSentenceDeleteKey, new SimpleConstraints(255, HEIGHT - 47));
+		add(labelSentenceUpKey, new SimpleConstraints(255, HEIGHT - 32));
+		add(labelSentenceDownKey, new SimpleConstraints(255, HEIGHT - 17));
 		
 		pnPalette = new PalettePanel(dragListener, source);
 		JScrollPane sp1 = new JScrollPane(pnPalette);

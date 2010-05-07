@@ -52,46 +52,42 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	
 //> I18N KEYS
 	/** i18n key: "Form Name" */
-	static final String I18N_KEY_FORM_NAME = "forms.editor.name.label";
+	static final String I18N_KEY_FORM_NAME = "plugins.forms.editor.name.label";
 	/** i18n key: "Form Editor" */
-	static final String I18N_KEY_FORMS_EDITOR = "forms.editor.title";
+	static final String I18N_KEY_FORMS_EDITOR = "plugins.forms.editor.title";
 	/** i18n key: "You have not entered a name for this form" */
-	static final String I18N_KEY_MESSAGE_FORM_NAME_BLANK = "forms.editor.name.validation.notset";
+	static final String I18N_KEY_MESSAGE_FORM_NAME_BLANK = "plugins.forms.name.blank";
 	/** i18n key: "You will not be able to edit this form again." */
-	private static final String I18N_KEY_CONFIRM_FINALISE = "forms.send.finalise.confirm";
+	private static final String I18N_KEY_CONFIRM_FINALISE = "plugins.forms.send.finalise.confirm";
 	/** i18n key: "There are no contacts to notify." */
-	private static final String I18N_KEY_NO_CONTACTS_TO_NOTIFY = "forms.send.nocontacts";
+	private static final String I18N_KEY_NO_CONTACTS_TO_NOTIFY = "plugins.forms.send.nocontacts";
 	/** i18n key: "Form submitter" */
-	public static final String I18N_FORM_SUBMITTER = "form.submitter";
+	public static final String I18N_FORM_SUBMITTER = "plugins.forms.submitter";
 	/** i18n key: "Your form 'formname' has been sent to N contacts." */
-	private static final String I18N_FORM_SENT_DIALOG_MESSAGE = "message.form.sent";
+	private static final String I18N_FORM_SENT_DIALOG_MESSAGE = "plugins.forms.message.form.sent";
 
 	/** i18n key: "Currency field" */
-	public static final String I18N_FCOMP_CURRENCY = "forms.field.currency";
-	public static final String I18N_FCOMP_DROP_DOWN_LIST = "common.dropdownlist";
-	public static final String I18N_FCOMP_MENU_ITEM = "common.menuitem";
-	public static final String I18N_FCOMP_NUMBER = "common.number";
-	public static final String I18N_FCOMP_PASSWORD = "common.password";
-	public static final String I18N_FCOMP_PHONENUMBER = "common.phonenumber";
-	public static final String I18N_FCOMP_RADIO_BUTTON = "common.radiobutton";
-	public static final String I18N_FCOMP_TEXT_AREA = "common.textarea";
-	public static final String I18N_FCOMP_TEXT_FIELD = "common.textfield";
-	public static final String I18N_FCOMP_BUTTON = "common.button";
-	public static final String I18N_FCOMP_CHECKBOX = "common.checkbox";
-	public static final String I18N_FCOMP_CREDITCARD = "common.creditcard";
+	public static final String I18N_FCOMP_CURRENCY = "plugins.forms.field.currency";
+	public static final String I18N_FCOMP_DROP_DOWN_LIST = "plugins.forms.field.dropdownlist";
+	public static final String I18N_FCOMP_NUMBER = "plugins.forms.field.number";
+	public static final String I18N_FCOMP_PASSWORD = "plugins.forms.field.password";
+	public static final String I18N_FCOMP_PHONENUMBER = "plugins.forms.field.phonenumber";
+	public static final String I18N_FCOMP_TEXT_AREA = "plugins.forms.field.textarea";
+	public static final String I18N_FCOMP_TEXT_FIELD = "plugins.forms.field.textfield";
+	public static final String I18N_FCOMP_CHECKBOX = "plugins.forms.field.checkbox";
 	public static final String I18N_FCOMP_TIME = "common.time";
-	public static final String I18N_FCOMP_TRUNCATED_TEXT = "common.truncatedtext";
-	public static final String I18N_FCOMP_WRAPPED_TEXT = "common.wrappedtext";
+	public static final String I18N_FCOMP_TRUNCATED_TEXT = "plugins.forms.field.truncatedtext";
+	public static final String I18N_FCOMP_WRAPPED_TEXT = "plugins.forms.field.wrappedtext";
 
-	public static final String COMMON_PALETTE = "common.palette";
-	public static final String COMMON_PREVIEW = "common.preview";
-	public static final String COMMON_PROPERTY = "common.property";
-	public static final String COMMON_VALUE = "common.value";
-	public static final String TOOLTIP_DRAG_TO_REMOVE = "tooltip.drag.to.remove";
-	public static final String TOOLTIP_DRAG_TO_PREVIEW = "tooltip.drag.to.preview";
-	public static final String SENTENCE_DELETE_KEY = "sentence.delete.key";
-	public static final String SENTENCE_UP_KEY = "sentence.up.key";
-	public static final String SENTENCE_DOWN_KEY = "sentence.down.key";
+	public static final String COMMON_PALETTE = "plugins.forms.palette";
+	public static final String COMMON_PREVIEW = "plugins.forms.preview";
+	public static final String COMMON_PROPERTY = "plugins.forms.property";
+	public static final String COMMON_VALUE = "plugins.forms.value";
+	public static final String TOOLTIP_DRAG_TO_REMOVE = "plugins.forms.tooltip.drag.to.remove";
+	public static final String TOOLTIP_DRAG_TO_PREVIEW = "plugins.forms.tooltip.drag.to.preview";
+	public static final String SENTENCE_DELETE_KEY = "plugins.forms.sentence.delete.key";
+	public static final String SENTENCE_UP_KEY = "plugins.forms.sentence.up.key";
+	public static final String SENTENCE_DOWN_KEY = "plugins.forms.sentence.down.key";
 	
 	private static final String MESSAGE_NO_FILENAME = "message.filename.blank";
 	private static final String MESSAGE_EXPORT_TASK_SUCCESSFUL = "message.export.successful";

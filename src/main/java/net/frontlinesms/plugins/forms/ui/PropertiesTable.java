@@ -19,10 +19,13 @@
  */
 package net.frontlinesms.plugins.forms.ui;
 
+import java.awt.Component;
 import java.util.Vector;
 
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
+import net.frontlinesms.ui.FrontlineUI;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
 
 /**
@@ -39,6 +42,12 @@ public class PropertiesTable extends JTable {
 	private Vector<String> data = null;
 	
 	public PropertiesTable() {
+		if (FrontlineUI.currentResourceBundle.getFont() != null) {
+			// We have to set the correct font for some languages, and we have to create a CellRenderer
+			FrontlineFormsCellRenderer frontlineFormsCellRenderer = new FrontlineFormsCellRenderer();
+			setDefaultRenderer(Object.class, frontlineFormsCellRenderer);
+			getTableHeader().setDefaultRenderer(frontlineFormsCellRenderer);
+		}		
 		model = new MyTableModel();
 		columns = new Vector<String>();
 		columns.add(InternationalisationUtils.getI18NString(FormsThinletTabController.COMMON_PROPERTY));
@@ -66,4 +75,13 @@ public class PropertiesTable extends JTable {
 	public void addProperty(String property, String value) {
 		model.addRow(new Object[]{property, value});
 	}
+	
+	@SuppressWarnings("serial")
+	private class FrontlineFormsCellRenderer extends DefaultTableCellRenderer {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			c.setFont(FrontlineUI.currentResourceBundle.getFont());
+			return c;
+		}
+	};
 }
