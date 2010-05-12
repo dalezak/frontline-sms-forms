@@ -94,6 +94,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String MESSAGE_EXPORT_TASK_FAILED = "message.export.failed";
 	private static final String MESSAGE_BAD_DIRECTORY = "message.bad.directory";
 	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = "message.file.overwrite.confirm";
+	private static final String I18N_KEY_SET_GROUP_BEFORE = "plugins.forms.set.group.before";
 	
 //> INSTANCE PROPERTIES
 	/** DAO for {@link Contact}s */
@@ -323,7 +324,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			if(selectedForm.getPermittedGroup() == null) {
 				// The form has no group set, so we should explain that this needs to be done.
 				// FIXME i18n
-				ui.alert("You must set a group for this form.\nYou can do this by right-clicking on the form.");
+				ui.alert(I18N_KEY_SET_GROUP_BEFORE);
 			} else if(!selectedForm.isFinalised()) { // check the form is finalised.
 				// if form is not finalised, warn that it will be!
 				ui.showConfirmationDialog("showSendSelectionDialog", this, I18N_KEY_CONFIRM_FINALISE);
