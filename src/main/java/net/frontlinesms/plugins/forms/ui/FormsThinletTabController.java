@@ -324,7 +324,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			if(selectedForm.getPermittedGroup() == null) {
 				// The form has no group set, so we should explain that this needs to be done.
 				// FIXME i18n
-				ui.alert(I18N_KEY_SET_GROUP_BEFORE);
+				ui.alert(InternationalisationUtils.getI18NString(I18N_KEY_SET_GROUP_BEFORE));
 			} else if(!selectedForm.isFinalised()) { // check the form is finalised.
 				// if form is not finalised, warn that it will be!
 				ui.showConfirmationDialog("showSendSelectionDialog", this, I18N_KEY_CONFIRM_FINALISE);
