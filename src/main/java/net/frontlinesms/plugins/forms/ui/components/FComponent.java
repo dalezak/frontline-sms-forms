@@ -21,21 +21,21 @@ package net.frontlinesms.plugins.forms.ui.components;
 
 import java.awt.Container;
 import java.io.Serializable;
-import java.util.HashMap;
 
 import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
+import net.frontlinesms.ui.i18n.InternationalisationUtils;
 
 @SuppressWarnings("serial")
 public abstract class FComponent implements Serializable, Cloneable {
 	
 //> CONSTANTS
 	/** Property name for property: Label */
-	public static final String PROPERTY_LABEL = "Label";
+	public static final String PROPERTY_LABEL = "plugins.forms.label";
 	/** Property name for property: Type */
-	public static final String PROPERTY_TYPE = "Type";
+	public static final String PROPERTY_TYPE = "plugins.forms.type";
 	
 	/** Value to display for {@link #label} when it is <code>null</code> */
-	public static final String PROPERTY_DISPLAY_VALUE_NO_LABEL = "(no label)";
+	public static final String PROPERTY_DISPLAY_VALUE_NO_LABEL = "plugins.forms.no.label";
 	
 	private int renderHeight = 30;
 	protected static final int renderWidth = 205;
@@ -73,7 +73,7 @@ public abstract class FComponent implements Serializable, Cloneable {
 		if(this.label != null && this.label.length() > 0) {
 			return this.label;
 		} else {
-			return PROPERTY_DISPLAY_VALUE_NO_LABEL;
+			return InternationalisationUtils.getI18NString(PROPERTY_DISPLAY_VALUE_NO_LABEL);
 		}
 	}
 	
