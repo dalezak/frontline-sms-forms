@@ -210,10 +210,10 @@ public class FormsEditorDialog extends JDialog {
 		propertiesTable.clean();
 		if (getSelectedComponent() != null) {
 			FComponent component = getSelectedComponent().getComponent();
-			propertiesTable.addProperty(FComponent.PROPERTY_TYPE, component.getDescription());
+			propertiesTable.addProperty(InternationalisationUtils.getI18NString(FComponent.PROPERTY_TYPE), component.getDescription());
 			String label = component.getLabel();
 			if(label == null) label = "";
-			propertiesTable.addProperty(FComponent.PROPERTY_LABEL, label);
+			propertiesTable.addProperty(InternationalisationUtils.getI18NString(FComponent.PROPERTY_LABEL), label);
 		}
 	}
 	
