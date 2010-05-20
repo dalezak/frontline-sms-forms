@@ -3,7 +3,7 @@
 	<groupId>net.frontlinesms.plugins</groupId>
 	<artifactId>frontlinesms-plugin-forms</artifactId>
 	<name>FrontlineSMS Forms plugin</name>
-	<version>0.02.12</version>
+	<version>0.02.13-SNAPSHOT</version>
 	<description>FrontlineForms plugin for FrontlineSMS</description>
 	<licenses>
 		<license>
