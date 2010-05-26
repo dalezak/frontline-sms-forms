@@ -51,7 +51,7 @@ public class FormsUiController {
 	 * @param value The new value.
 	 */
 	public void propertiesChanged(String property, String value) {
-		if(property != null && property.equals(FComponent.PROPERTY_LABEL)) {
+		if(property != null) {
 			FComponent comp = mainFrame.getSelectedComponent().getComponent();
 			if(comp.getLabel() == null || !comp.getLabel().equals(value)) {
 				comp.setLabel(value);
