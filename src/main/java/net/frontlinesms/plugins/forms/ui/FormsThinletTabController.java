@@ -235,15 +235,14 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public void formsList_selectionChanged() {
 		Form selectedForm = getForm(ui.getSelectedItem(getFormsList()));
 		
-		if (selectedForm != null) {
-			if (selectedForm.isFinalised()) {
-				showResultsPanel(selectedForm);
-			}
+		if (selectedForm != null && selectedForm.isFinalised()) {
+			showResultsPanel(selectedForm);
 		} else {
 			//Nothing selected
 			Object pnRight = find("pnRight");
 			ui.removeAll(pnRight);
 		}
+
 		formsTab_enabledFields();
 	}
 	
