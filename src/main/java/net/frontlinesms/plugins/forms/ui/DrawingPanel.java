@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import net.frontlinesms.Utils;
+import net.frontlinesms.FrontlineUtils;
 import net.frontlinesms.plugins.forms.ui.components.PaletteComponent;
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
 import net.frontlinesms.plugins.forms.ui.components.VisualForm;
@@ -70,7 +70,7 @@ public class DrawingPanel extends JPanel {
 		
 		setLayout(new SimpleLayout());
 		
-		JLabel bin = new JLabel(new ImageIcon(Utils.getImage(Icon.BIN, getClass())));
+		JLabel bin = new JLabel(new ImageIcon(FrontlineUtils.getImage(Icon.BIN, getClass())));
 		bin.setToolTipText(InternationalisationUtils.getI18NString(FormsThinletTabController.TOOLTIP_DRAG_TO_REMOVE));
 		add(bin, new SimpleConstraints(470, HEIGHT - 40));
 		

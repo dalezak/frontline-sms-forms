@@ -42,7 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import net.frontlinesms.Utils;
+import net.frontlinesms.FrontlineUtils;
 import net.frontlinesms.plugins.forms.ui.components.FComponent;
 import net.frontlinesms.plugins.forms.ui.components.PreviewComponent;
 import net.frontlinesms.plugins.forms.ui.components.VisualForm;
@@ -108,14 +108,14 @@ public class FormsEditorDialog extends JDialog {
 		});
 		JLabel formName = new JLabel(InternationalisationUtils.getI18NString(FormsThinletTabController.I18N_KEY_FORM_NAME) + ": ");
 		//formName.setFont(FrontlineUI.currentResourceBundle.getFont());
-		formName.setIcon(new ImageIcon(Utils.getImage("/icons/form.png", getClass())));
+		formName.setIcon(new ImageIcon(FrontlineUtils.getImage("/icons/form.png", getClass())));
 		
 		FontMetrics m = formName.getFontMetrics(formName.getFont());
 		int width = m.stringWidth(formName.getText()) + formName.getIcon().getIconWidth();
 		innerContentPane.add(formName, new SimpleConstraints(160, 590));
 		innerContentPane.add(tfFormName, new SimpleConstraints(160 + width + 20, 588, 200, null));
 		
-		JButton btSave = new JButton(InternationalisationUtils.getI18NString(ACTION_SAVE), new ImageIcon(Utils.getImage("/icons/tick.png", getClass())));
+		JButton btSave = new JButton(InternationalisationUtils.getI18NString(ACTION_SAVE), new ImageIcon(FrontlineUtils.getImage("/icons/tick.png", getClass())));
 		btSave.setFont(FrontlineUI.currentResourceBundle.getFont());
 		
 		btSave.addActionListener(new ActionListener() {
@@ -123,7 +123,7 @@ public class FormsEditorDialog extends JDialog {
 				save();
 			}
 		});
-		JButton btCancel = new JButton(InternationalisationUtils.getI18NString(ACTION_CANCEL), new ImageIcon(Utils.getImage("/icons/cross.png", getClass())));
+		JButton btCancel = new JButton(InternationalisationUtils.getI18NString(ACTION_CANCEL), new ImageIcon(FrontlineUtils.getImage("/icons/cross.png", getClass())));
 		btCancel.setFont(FrontlineUI.currentResourceBundle.getFont());
 		
 		btCancel.addActionListener(new ActionListener() {
@@ -143,7 +143,7 @@ public class FormsEditorDialog extends JDialog {
 			// for a window???
 			Method setIconImage = this.getClass().getDeclaredMethod("setIconImage", Image.class);
 			setIconImage.setAccessible(true);
-			setIconImage.invoke(this, Utils.getImage("/icons/frontline_icon.png", getClass()));
+			setIconImage.invoke(this, FrontlineUtils.getImage("/icons/frontline_icon.png", getClass()));
 		} catch(Throwable t) {
 			// We're running on pre-1.6 :)
 		}

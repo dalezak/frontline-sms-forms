@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import net.frontlinesms.FrontlineSMS;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
-import net.frontlinesms.data.domain.Message;
+import net.frontlinesms.data.domain.FrontlineMessage;
 import net.frontlinesms.data.events.EntityDeleteWarning;
 import net.frontlinesms.data.repository.ContactDao;
 import net.frontlinesms.events.EventBus;
@@ -157,7 +157,7 @@ public class FormsPluginController extends BasePluginController implements Incom
 
 //> EVENT HANDLING METHODS
 	/** Process a new message coming into the system. */
-	public void incomingMessageEvent(Message message) {
+	public void incomingMessageEvent(FrontlineMessage message) {
 		try {
 			FormsRequestDescription request = this.formsMessageHandler.handleIncomingMessage(message);
 			
@@ -194,9 +194,9 @@ public class FormsPluginController extends BasePluginController implements Incom
 	
 	/* default access to allow for unit test */
 	void handleResponse(Integer smsPort, String senderMsisdn, FormsResponseDescription response) throws FormHandlingException {
-		Collection<Message> responseMessages = this.formsMessageHandler.handleOutgoingMessage(response);
+		Collection<FrontlineMessage> responseMessages = this.formsMessageHandler.handleOutgoingMessage(response);
 		log.info("Sending forms response.  Response messages: " + responseMessages.size());
-		for(Message responseMessage : responseMessages) {
+		for(FrontlineMessage responseMessage : responseMessages) {
 			// Make sure that the response is sent to the correct recipient!
 			responseMessage.setRecipientMsisdn(senderMsisdn);
 			if(smsPort != null) {

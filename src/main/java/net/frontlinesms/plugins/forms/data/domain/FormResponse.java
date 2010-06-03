@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import net.frontlinesms.data.domain.Message;
-
 /**
  * A response to a {@link Form}.
  * @author Alex

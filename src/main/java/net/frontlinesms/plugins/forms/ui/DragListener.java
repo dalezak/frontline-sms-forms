@@ -42,7 +42,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.frontlinesms.Utils;
+import net.frontlinesms.FrontlineUtils;
 import net.frontlinesms.plugins.forms.ui.components.PaletteComponent;
 
 import org.apache.log4j.Logger;
@@ -57,7 +57,7 @@ public class DragListener implements Transferable, DragSourceListener, DragGestu
 	private Object data;
 	private DrawingPanel drawingPanel;
 	
-	private static Logger LOG = Utils.getLogger(DragListener.class);
+	private static Logger LOG = FrontlineUtils.getLogger(DragListener.class);
 	
 	public DragListener(DrawingPanel drawingPanel) {
 		flavors = new DataFlavor[1];

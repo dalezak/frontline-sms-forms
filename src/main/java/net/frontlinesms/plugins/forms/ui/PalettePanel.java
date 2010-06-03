@@ -27,7 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import net.frontlinesms.Utils;
+import net.frontlinesms.FrontlineUtils;
 import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
 import net.frontlinesms.plugins.forms.ui.components.FComponent;
 import net.frontlinesms.plugins.forms.ui.components.PaletteComponent;
@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  * <li> kadu(at)masabi(dot)com
  */
 public class PalettePanel extends JPanel {
-	private static Logger LOG = Utils.getLogger(PalettePanel.class);
+	private static Logger LOG = FrontlineUtils.getLogger(PalettePanel.class);
 	private static final long serialVersionUID = 1799362551968963234L;
 	
 	public PalettePanel(DragListener dragListener, DragSource source) {
@@ -78,7 +78,7 @@ public class PalettePanel extends JPanel {
 	 */
 	private PaletteComponent getComponent(FComponent c) {
 		PaletteComponent label = new PaletteComponent(c.getDescription());
-		label.setIcon(new ImageIcon(Utils.getImage("/icons/components/" + c.getIcon(), getClass())));
+		label.setIcon(new ImageIcon(FrontlineUtils.getImage("/icons/components/" + c.getIcon(), getClass())));
 		label.setFont(FrontlineUI.currentResourceBundle.getFont());
 		label.setComponent(c);
 		return label;

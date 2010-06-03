@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
-import net.frontlinesms.data.domain.Message;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 
 /**

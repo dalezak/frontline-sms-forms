@@ -25,13 +25,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import net.frontlinesms.Utils;
+import net.frontlinesms.FrontlineUtils;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.domain.FormField;
 
 @SuppressWarnings("serial")
 public class VisualForm extends FComponent {
-	private static final Logger LOG = Utils.getLogger(VisualForm.class);
+	private static final Logger LOG = FrontlineUtils.getLogger(VisualForm.class);
 	
 	private List<PreviewComponent> components = new ArrayList<PreviewComponent>();
 
