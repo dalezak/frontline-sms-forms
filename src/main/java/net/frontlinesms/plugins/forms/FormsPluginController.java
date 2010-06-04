@@ -185,6 +185,8 @@ public class FormsPluginController extends BasePluginController implements Incom
 			Object dbEntity = deleteWarning.getDatabaseEntity();
 			
 			if(dbEntity instanceof Group) {
+				System.err.println("Deleted Group: " + ((Group) dbEntity).getPath());
+
 				// de-reference any groups which are attached to forms
 				this.formDao.dereferenceGroup((Group) dbEntity);
 				return;
