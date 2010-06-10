@@ -144,23 +144,6 @@ public class FormsPluginControllerTest extends BaseTestCase {
 
 		verify(mockApplicationContext).getBean("formDao");
 		verify(mockApplicationContext).getBean("formResponseDao");
-		verify(mockApplicationContext).getBean("eventBus");
-		verify(mockEventBus).registerObserver(controller);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void testNotify() {
-		FormsPluginController controller = new FormsPluginController();
-		FormDao mockFormDao = mock(FormDao.class);
-		controller.setFormsDao(mockFormDao);
-		
-		Group mockGroup = mock(Group.class);
-		EntityDeleteWarning<Group> mockWarning = mock(EntityDeleteWarning.class);
-		when(mockWarning.getDatabaseEntity()).thenReturn(mockGroup);
-		
-		controller.notify(mockWarning);
-		
-		verify(mockFormDao).dereferenceGroup(mockGroup);
 	}
 	
 //> HELPER METHODS

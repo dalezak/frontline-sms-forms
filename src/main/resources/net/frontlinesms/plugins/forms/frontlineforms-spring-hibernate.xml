@@ -15,6 +15,7 @@
 
 	<bean id="formDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormDao" parent="baseHibernateDao">
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="eventBus" ref="eventBus"/>
 	</bean>
 	<bean id="formResponseDao" class="net.frontlinesms.plugins.forms.data.repository.hibernate.HibernateFormResponseDao">
 		<property name="sessionFactory" ref="sessionFactory" />
@@ -22,5 +23,6 @@
 	
 	<bean id="baseHibernateDao" abstract="true" class="net.frontlinesms.data.repository.hibernate">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="eventBus" ref="eventBus"/>
 	</bean>
 </beans>

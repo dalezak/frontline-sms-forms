@@ -7,18 +7,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
-
 import net.frontlinesms.FrontlineSMS;
 import net.frontlinesms.data.domain.Contact;
-import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.domain.FrontlineMessage;
-import net.frontlinesms.data.events.EntityDeleteWarning;
 import net.frontlinesms.data.repository.ContactDao;
-import net.frontlinesms.events.EventBus;
-import net.frontlinesms.events.EventObserver;
-import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.listener.IncomingMessageListener;
 import net.frontlinesms.plugins.BasePluginController;
 import net.frontlinesms.plugins.PluginController;
@@ -28,8 +20,8 @@ import net.frontlinesms.plugins.forms.data.FormHandlingException;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.domain.FormResponse;
 import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
-import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
+import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 import net.frontlinesms.plugins.forms.request.DataSubmissionRequest;
 import net.frontlinesms.plugins.forms.request.FormsRequestDescription;
 import net.frontlinesms.plugins.forms.request.NewFormRequest;
@@ -42,6 +34,9 @@ import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.i18n.InternationalisationUtils;
 import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationContext;
+
 /**
  * Controller for the FrontlineForms plugin.
  * @author Alex
@@ -50,7 +45,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
 		springConfigLocation="classpath:net/frontlinesms/plugins/forms/frontlineforms-spring-hibernate.xml",
 		hibernateConfigPath="classpath:net/frontlinesms/plugins/forms/frontlineforms.hibernate.cfg.xml")
 @TextResourceKeyOwner
-public class FormsPluginController extends BasePluginController implements IncomingMessageListener, EventObserver {
+public class FormsPluginController extends BasePluginController implements IncomingMessageListener {
 //> CONSTANTS
 	/** Filename and path of the XML for the FrontlineForms tab. */
 	private static final String XML_FORMS_TAB = "/ui/plugins/forms/formsTab.xml";
@@ -80,7 +75,6 @@ public class FormsPluginController extends BasePluginController implements Incom
 		try {
 			this.formDao = (FormDao) applicationContext.getBean("formDao");
 			this.formResponseDao = (FormResponseDao) applicationContext.getBean("formResponseDao");
-			((EventBus) applicationContext.getBean("eventBus")).registerObserver(this);
 			
 			String handlerClassName = FormsProperties.getInstance().getHandlerClassName();
 			setHandler(handlerClassName);
@@ -176,21 +170,6 @@ public class FormsPluginController extends BasePluginController implements Incom
 			}
 		} catch (Throwable t) {
 			log.info("There was a problem handling incoming message as forms message.", t);
-		}
-	}
-	
-	public void notify(FrontlineEventNotification notification) {
-		if(notification instanceof EntityDeleteWarning<?>) {
-			EntityDeleteWarning<?> deleteWarning = (EntityDeleteWarning<?>) notification;
-			Object dbEntity = deleteWarning.getDatabaseEntity();
-			
-			if(dbEntity instanceof Group) {
-				System.err.println("Deleted Group: " + ((Group) dbEntity).getPath());
-
-				// de-reference any groups which are attached to forms
-				this.formDao.dereferenceGroup((Group) dbEntity);
-				return;
-			}
 		}
 	}
 	

@@ -20,7 +20,6 @@ import net.frontlinesms.plugins.forms.request.NewFormRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Test class for {@link HibernateFormDao}
@@ -136,25 +135,14 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		form3.setPermittedGroup(group3);
 		this.formDao.saveForm(form3);
 
-		// check that deleting the groups will fail
-		try {
-			this.groupDao.deleteGroup(group1, false);
-			fail("Should not be able to delete a group that is attached to a form.");
-		} catch(DataIntegrityViolationException ex) { /* expected */ }
-		try {
-			this.groupDao.deleteGroup(group2, false);
-			fail("Should not be able to delete a group that is attached to a form.");
-		} catch(DataIntegrityViolationException ex) { /* expected */ }
-		try {
-			this.groupDao.deleteGroup(group3, false);
-			fail("Should not be able to delete a group that is attached to a form.");
-		} catch(DataIntegrityViolationException ex) { /* expected */ }
+		this.groupDao.deleteGroup(group1, false);
+		this.groupDao.deleteGroup(group2, false);
+		this.groupDao.deleteGroup(group3, false);
 		
 		// check that dereferencing the groups and THEN deleting them will succeed
-		this.formDao.dereferenceGroup(group2);
-		this.groupDao.deleteGroup(group2, false); // this group has no children
-		this.formDao.dereferenceGroup(group1);
-		this.groupDao.deleteGroup(group1, false); // this group has one child now
+		assertTrue(this.formDao.getFromId(form1.getFormMobileId()).getPermittedGroup() == null);
+		assertTrue(this.formDao.getFromId(form2.getFormMobileId()).getPermittedGroup() == null);
+		assertTrue(this.formDao.getFromId(form3.getFormMobileId()).getPermittedGroup() == null);
 	}		
 	
 	public void testDereferenceMessage() {
