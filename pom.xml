@@ -34,7 +34,7 @@
 	
 	<scm>
 		<connection>scm:git://frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms.git</connection>
-		<developerConnection>scm:git:ssh://alexandergeorge@frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms</developerConnection>
+		<developerConnection>scm:git:ssh://${sourceforge.username}@frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms</developerConnection>
 	</scm>
 	
 	<repositories>
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>net.frontlinesms.core</groupId>
 			<artifactId>frontlinesms</artifactId>
-			<version>1.6.13-SNAPSHOT</version>
+			<version>1.6.13</version>
 		</dependency>
 		
 		<dependency>
