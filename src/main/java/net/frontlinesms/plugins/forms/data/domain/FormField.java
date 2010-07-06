@@ -25,6 +25,9 @@ public class FormField implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private FormFieldType type;
 	
+	@ManyToOne(cascade={},fetch=FetchType.LAZY,targetEntity=Form.class)
+	private Form form;
+	
 	/** The position of the field within the form. */
 	private int positionIndex;
 
@@ -101,5 +104,13 @@ public class FormField implements Serializable {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public void setForm(Form form) {
+		this.form = form;
+	}
+
+	public Form getForm() {
+		return form;
 	}
 }
