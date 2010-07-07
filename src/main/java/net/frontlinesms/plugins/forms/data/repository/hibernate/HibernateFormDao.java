@@ -5,16 +5,23 @@ package net.frontlinesms.plugins.forms.data.repository.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.frontlinesms.data.DuplicateKeyException;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
+import net.frontlinesms.data.events.EntityDeleteWarning;
 import net.frontlinesms.data.repository.hibernate.BaseHibernateDao;
+import net.frontlinesms.events.EventBus;
+import net.frontlinesms.events.EventObserver;
+import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -22,12 +29,30 @@ import org.hibernate.criterion.Restrictions;
  * @author Alex Anderson <alex@frontlinesms.com>
  * @author Morgan Belkadi <morgan@frontlinesms.com>
  */
-public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao {
+public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao, EventObserver {
 
 //> CONSTRUCTOR
 	/** Create new instance of this DAO */
 	public HibernateFormDao() {
 		super(Form.class);
+	}
+	
+	public void notify(FrontlineEventNotification notification) {
+		if(notification instanceof EntityDeleteWarning<?>) {
+			EntityDeleteWarning<?> deleteWarning = (EntityDeleteWarning<?>) notification;
+			Object dbEntity = deleteWarning.getDatabaseEntity();
+			
+			if(dbEntity instanceof Group) {
+				// de-reference any groups which are attached to forms
+				dereferenceGroup((Group) dbEntity);
+				return;
+			}
+		}
+	}
+	
+	public void setEventBus(EventBus eventBus){
+		eventBus.registerObserver(this);
+		super.setEventBus(eventBus);
 	}
 	
 	/** @see FormDao#getFormsForUser(Contact, Collection) */
@@ -111,10 +136,21 @@ public class HibernateFormDao extends BaseHibernateDao<Form> implements FormDao 
 	}
 	
 	public void dereferenceGroup(Group group) {
-		String queryString = "UPDATE Form SET " + Form.FIELD_PERMITTED + "=NULL" +
-				" WHERE (" + Form.FIELD_PERMITTED + "=?" +
-						" OR permittedGroup.path LIKE ?)";
-		String childPathLike = group.getPath() + Group.PATH_SEPARATOR + "%";
-		super.getHibernateTemplate().bulkUpdate(queryString, new Object[]{group, childPathLike});
+		DetachedCriteria criteria = super.getCriterion();
+		Criterion equals = Restrictions.eq(Form.FIELD_PERMITTED, group);
+		Criterion like = Restrictions.like("permittedGroup.path", group.getPath() + Group.PATH_SEPARATOR, MatchMode.START);  
+		criteria.add(Restrictions.or(equals, like));
+		List<Form> forms = getList(criteria);
+		
+		for (Form formWithDereferencedGroup : forms) {
+			System.err.println("Delete form: " + formWithDereferencedGroup.getName());
+			formWithDereferencedGroup.setPermittedGroup(null);
+			try {
+				this.update(formWithDereferencedGroup);
+			} catch (DuplicateKeyException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException("There was a problem removing the deleted group from its attached form.");
+			}
+		}
 	}
 }

@@ -17,6 +17,8 @@ import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
 import net.frontlinesms.data.repository.ContactDao;
 import net.frontlinesms.data.repository.GroupMembershipDao;
+import net.frontlinesms.events.EventObserver;
+import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.FormsPluginController;
 import net.frontlinesms.plugins.forms.csv.CsvFormExporter;
 import net.frontlinesms.plugins.forms.data.domain.*;
@@ -25,6 +27,7 @@ import net.frontlinesms.plugins.forms.ui.components.*;
 import net.frontlinesms.plugins.BasePluginThinletTabController;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
+import net.frontlinesms.ui.events.TabChangedNotification;
 import net.frontlinesms.ui.handler.ComponentPagingHandler;
 import net.frontlinesms.ui.handler.PagedComponentItemProvider;
 import net.frontlinesms.ui.handler.PagedListDetails;
@@ -38,7 +41,7 @@ import net.frontlinesms.ui.i18n.TextResourceKeyOwner;
  * @author Alex
  */
 @TextResourceKeyOwner(prefix={"I18N_", "COMMON_", "SENTENCE_", "TOOLTIP_"})
-public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements SingleGroupSelecterDialogOwner, PagedComponentItemProvider {
+public class FormsThinletTabController extends BasePluginThinletTabController<FormsPluginController> implements SingleGroupSelecterDialogOwner, PagedComponentItemProvider, EventObserver {
 //> CONSTANTS
 	/** XML file containing forms pane for viewing results of a form */
 	protected static final String UI_FILE_RESULTS_VIEW = "/ui/plugins/forms/formsTab_resultsView.xml";
@@ -96,6 +99,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = "message.file.overwrite.confirm";
 	private static final String I18N_KEY_SET_GROUP_BEFORE = "plugins.forms.set.group.before";
 	
+	private static final Object UI_FORM_TAB_NAME = ":forms";
+	
 //> INSTANCE PROPERTIES
 	/** DAO for {@link Contact}s */
 	private ContactDao contactDao;
@@ -116,6 +121,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 //> CONSTRUCTORS
 	public FormsThinletTabController(FormsPluginController pluginController, UiGeneratorController ui) {
 		super(pluginController, ui);
+		
+		this.ui.getFrontlineController().getEventBus().registerObserver(this);
 	}
 	
 //> INSTANCE METHODS	
@@ -131,7 +138,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		for(Form f : formsDao.getAllForms()) {
 			Object formNode = getNode(f);
 			ui.add(formList, formNode);
-			if(f.equals(previousSelectedForm)) {
+			if (previousSelectedForm != null && f.getFormMobileId() ==  previousSelectedForm.getFormMobileId()) {
 				newSelectedItem = formNode;
 			}
 		}
@@ -733,5 +740,18 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	 */
 	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
 		this.groupMembershipDao = groupMembershipDao;
+	}
+	
+	/**
+	 * Warn the user if he changes to another tab and has unsaved changes 
+	 */
+	public void notify(FrontlineEventNotification notification) {
+		// This object is registered to the UIGeneratorController and get notified when the users changes tab
+		if(notification instanceof TabChangedNotification) {
+			String newTabName = ((TabChangedNotification) notification).getNewTabName();
+			if (newTabName.equals(UI_FORM_TAB_NAME)) {
+				this.refresh();
+			}
+		}
 	}
 }

@@ -4,7 +4,7 @@
 		 <splitpane divider="400" weightx="1" weighty="1" rowspan="2">
         	<panel columns="1" weighty="1" weightx="1" gap="8">
 		        <panel rowspan="2" border="true" bottom="4" columns="1" gap="8" icon="/icons/form.png" left="4" right="4" text="i18n.plugins.forms.forms" top="4" weightx="1" weighty="1">
-		        	<tree delete="showConfirmationDialog('deleteSelected')" action="formsList_selectionChanged" perform="formsList_editSelected" name="formsList" weightx="1" weighty="1">
+		        	<tree delete="showConfirmationDialog('formsList_deleteSelected')" action="formsList_selectionChanged" perform="formsList_editSelected" name="formsList" weightx="1" weighty="1">
 		        		<popupmenu name="formsList_popupmenu" menushown="formsTab_enabledFields">
 		        			<menuitem action="showFormsEditor" icon="/icons/form_add.png" name="miNew" text="i18n.action.new" />
 		        			<menuitem action="formsList_editSelected" icon="/icons/form_edit.png" name="miEdit" text="i18n.action.edit" />

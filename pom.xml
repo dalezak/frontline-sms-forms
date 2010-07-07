@@ -3,7 +3,7 @@
 	<groupId>net.frontlinesms.plugins</groupId>
 	<artifactId>frontlinesms-plugin-forms</artifactId>
 	<name>FrontlineSMS Forms plugin</name>
-	<version>0.02.13-SNAPSHOT</version>
+	<version>0.02.18-SNAPSHOT</version>
 	<description>FrontlineForms plugin for FrontlineSMS</description>
 	<licenses>
 		<license>
@@ -34,7 +34,7 @@
 	
 	<scm>
 		<connection>scm:git://frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms.git</connection>
-		<developerConnection>scm:git:ssh://alexandergeorge@frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms</developerConnection>
+		<developerConnection>scm:git:ssh://${sourceforge.username}@frontlinesms.git.sourceforge.net/gitroot/frontlinesms/plugin-forms</developerConnection>
 	</scm>
 	
 	<repositories>

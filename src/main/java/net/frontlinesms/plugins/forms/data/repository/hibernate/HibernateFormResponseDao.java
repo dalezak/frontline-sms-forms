@@ -9,6 +9,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import net.frontlinesms.data.repository.hibernate.BaseHibernateDao;
+import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.domain.FormResponse;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
@@ -41,6 +42,11 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 	/** @see FormResponseDao#saveResponse(FormResponse) */
 	public void saveResponse(FormResponse formResponse) {
 		super.saveWithoutDuplicateHandling(formResponse);
+	}
+
+	public void notify(FrontlineEventNotification notification) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
