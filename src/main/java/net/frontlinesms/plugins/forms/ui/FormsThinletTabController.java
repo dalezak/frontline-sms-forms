@@ -25,6 +25,7 @@ import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
 import net.frontlinesms.plugins.BasePluginThinletTabController;
+import net.frontlinesms.ui.FileChooser;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.events.TabChangedNotification;
@@ -164,7 +165,12 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 	public void showSaveModeFileChooser (Object textFieldToBeSet) {
-		this.ui.showSaveModeFileChooser(textFieldToBeSet);
+		FileChooser fc = FileChooser.createFileChooser(this.ui, this, "saveChooseComplete");
+		fc.show();
+	}
+	
+	public void saveChooseComplete(String filename) {
+		this.ui.setText(this.ui.find("tfFilename"), filename);
 	}
 	
 	/** Show the AWT Forms Editor window */
