@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationContext;
 import net.frontlinesms.FrontlineSMS;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
-import net.frontlinesms.data.events.EntityDeleteWarning;
 import net.frontlinesms.data.repository.ContactDao;
 import net.frontlinesms.events.EventBus;
 import net.frontlinesms.junit.BaseTestCase;
