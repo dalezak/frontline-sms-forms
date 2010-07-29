@@ -256,7 +256,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			ui.removeAll(pnRight);
 		}
 
-		formsTab_enabledFields();
+		enableMenuOptions(find("formsList_toolbar"));
 	}
 	
 	/**
@@ -440,9 +440,9 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 	/** Form selection has changed, so decide which toolbar and popup options should be available considering the current selection. */
-	public void formsTab_enabledFields() {
-		enableMenuOptions(find("formsList_toolbar"));
-		enableMenuOptions(find("formsList_popupMenu"));
+	public void formsTab_enabledFields(Object formsList_toolbar, Object formsList_popupMenu) {
+		enableMenuOptions(formsList_toolbar);
+		enableMenuOptions(formsList_popupMenu);
 	}
 	
 	/**
@@ -455,17 +455,22 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Form selectedForm = getForm(selectedComponent);
 		for (Object o : ui.getItems(menuComponent)) {
 			String name = ui.getName(o);
-			if(name != null) { 
-				if (name.contains("Delete")) {
-					// Tricky to remove the component for a form when the field is selected.  If someone wants to
-					// solve that, they're welcome to enable delete here for FormFields
-					ui.setEnabled(o, ui.getAttachedObject(selectedComponent) instanceof Form);
-				} else if (name.contains("Edit")) {
-					ui.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
-				} else if (name.contains("New")) {
-					ui.setEnabled(o, true);
+			if(name != null) {
+				if (ui.getItems(getFormsList()).length == 0) {
+					ui.setVisible(o, (!name.startsWith("mi") && !name.startsWith("sp")) || name.endsWith("New"));
 				} else {
-					ui.setEnabled(o, selectedForm != null);
+					ui.setVisible(o, true);
+					if (name.contains("Delete")) {
+						// Tricky to remove the component for a form when the field is selected.  If someone wants to
+						// solve that, they're welcome to enable delete here for FormFields
+						ui.setEnabled(o, ui.getAttachedObject(selectedComponent) instanceof Form);
+					} else if (name.contains("Edit")) {
+						ui.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
+					} else if (name.contains("New")) {
+						ui.setEnabled(o, true);
+					} else {
+						ui.setEnabled(o, selectedForm != null);
+					}
 				}
 			}
 		}
