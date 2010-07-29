@@ -143,10 +143,6 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		assertTrue(this.formDao.getFromId(form1.getFormMobileId()).getPermittedGroup() == null);
 		assertTrue(this.formDao.getFromId(form2.getFormMobileId()).getPermittedGroup() == null);
 		assertTrue(this.formDao.getFromId(form3.getFormMobileId()).getPermittedGroup() == null);
-	}		
-	
-	public void testDereferenceMessage() {
-		
 	}
 	
 //> HELPER METHODS

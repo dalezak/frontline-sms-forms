@@ -34,4 +34,6 @@ public interface FormResponseDao {
 	 * @param formResponse the response to save
 	 */
 	public void saveResponse(FormResponse formResponse);
+
+	public void delete(FormResponse responseOne);
 }
