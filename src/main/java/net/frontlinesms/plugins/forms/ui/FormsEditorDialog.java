@@ -132,8 +132,11 @@ public class FormsEditorDialog extends JDialog {
 			}
 		});
 		
-		innerContentPane.add(btSave, new SimpleConstraints(160 + width + 20 + 200 + 20, 585));
-		innerContentPane.add(btCancel, new SimpleConstraints(160 + width + 20 + 200 + 20 + 90, 585));
+		int posSaveButton = 160 + width + 20 + 200 + 20;
+		innerContentPane.add(btSave, new SimpleConstraints(posSaveButton, 585));
+		
+		FontMetrics btSaveMetrics = btSave.getFontMetrics(btSave.getFont());
+		innerContentPane.add(btCancel, new SimpleConstraints(posSaveButton + btSaveMetrics.stringWidth(btSave.getText()) + btSave.getIcon().getIconWidth() + 40, 585));
 		
 		this.setResizable(true);
 		this.setSize(815, 665);
