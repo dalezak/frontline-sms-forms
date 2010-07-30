@@ -134,16 +134,4 @@ public class HibernateFormResponseDaoTest extends HibernateTestCase {
 	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
 		this.groupMembershipDao = groupMembershipDao;
 	}
-	
-	@Override
-	public void doTearDown() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void test() throws Throwable {
-		// TODO Auto-generated method stub
-		
-	}
 }
