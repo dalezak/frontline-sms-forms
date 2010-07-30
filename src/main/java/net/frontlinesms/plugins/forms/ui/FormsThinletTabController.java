@@ -170,12 +170,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 	public void showSaveModeFileChooser (Object textFieldToBeSet) {
-		FileChooser fc = FileChooser.createFileChooser(this.ui, this, "saveChooseComplete");
-		fc.show();
-	}
-	
-	public void saveChooseComplete(String filename) {
-		this.ui.setText(this.ui.find("tfFilename"), filename);
+		this.ui.showFileChooser(textFieldToBeSet);
 	}
 	
 	/** Show the AWT Forms Editor window */
