@@ -58,7 +58,7 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 			Object entity = ((DatabaseEntityNotification<?>) notification).getDatabaseEntity();
 			
 			if (entity instanceof Form && notification instanceof EntityDeleteWarning<?>) {
-				deleteResponseOf((Form) entity);
+				deleteResponsesOf((Form) entity);
 			}
 		}
 	}
@@ -67,7 +67,7 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 	 * Deletes all responses related to a form
 	 * @param form
 	 */
-	private void deleteResponseOf(Form form) {
+	private void deleteResponsesOf(Form form) {
 		DetachedCriteria criteria = super.getCriterion();
 		criteria.add(Restrictions.eq(FormResponse.FIELD_FORM, form));
 		
