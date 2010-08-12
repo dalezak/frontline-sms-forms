@@ -68,7 +68,7 @@ public class Form implements Serializable {
 	}
 
 	/** @return {@link #fields} */
-	public Collection<FormField> getFields() {
+	public List<FormField> getFields() {
 		return Collections.unmodifiableList(this.fields);
 	}
 	

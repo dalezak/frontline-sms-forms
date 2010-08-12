@@ -11,7 +11,10 @@ import org.hibernate.criterion.Restrictions;
 import net.frontlinesms.data.repository.hibernate.BaseHibernateDao;
 import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.data.domain.Form;
+import net.frontlinesms.plugins.forms.data.domain.FormField;
+import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
 import net.frontlinesms.plugins.forms.data.domain.FormResponse;
+import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 
 /**
@@ -34,9 +37,18 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 
 	/** @see FormResponseDao#getFormResponses(Form, int, int) */
 	public List<FormResponse> getFormResponses(Form form, int startIndex, int limit) {
-		DetachedCriteria criteria = super.getCriterion();
-		criteria.add(Restrictions.eq(FormResponse.FIELD_FORM, form));
-		return super.getList(criteria, startIndex, limit);
+		// TODO please write a unit test to demonstrate the working code working and the non-working
+		// code NOT working.  This has proved difficult so far.
+		
+		// THIS DOES NOT WORK
+		//DetachedCriteria criteria = super.getCriterion();
+		//criteria.add(Restrictions.eq(FormResponse.FIELD_FORM, form));
+		//return super.getList(criteria, startIndex, limit);
+		
+		// THIS WORKS:
+		String selectString = "SELECT fr FROM " + FormResponse.class.getName() + " fr WHERE parentForm_id=?";
+		Integer id = form.getFormMobileId();
+		return super.getList(selectString, id);
 	}
 
 	/** @see FormResponseDao#saveResponse(FormResponse) */

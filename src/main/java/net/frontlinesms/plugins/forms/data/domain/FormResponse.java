@@ -23,7 +23,7 @@ public class FormResponse implements Serializable {
 	@SuppressWarnings("unused")
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true,nullable=false,updatable=false)
-	private long id;
+	public long id;
 	
 	/** The form that this object is a response to. */
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -61,10 +61,5 @@ public class FormResponse implements Serializable {
 	/** @return the MSISDN of the form submitter */
 	public String getSubmitter() {
 		return this.senderMsisdn;
-	}
-	
-	/** @return {@link #parentForm} */
-	public Form getParentForm() {
-		return parentForm;
 	}
 }
