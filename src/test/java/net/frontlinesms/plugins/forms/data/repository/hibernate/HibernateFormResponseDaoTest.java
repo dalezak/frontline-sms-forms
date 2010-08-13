@@ -5,20 +5,8 @@ package net.frontlinesms.plugins.forms.data.repository.hibernate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
-import net.frontlinesms.data.DuplicateKeyException;
-import net.frontlinesms.data.domain.Contact;
-import net.frontlinesms.data.domain.Group;
-import net.frontlinesms.data.repository.ContactDao;
-import net.frontlinesms.data.repository.GroupDao;
-import net.frontlinesms.data.repository.GroupMembershipDao;
 import net.frontlinesms.junit.HibernateTestCase;
 import net.frontlinesms.plugins.forms.data.domain.Form;
 import net.frontlinesms.plugins.forms.data.domain.FormField;
@@ -27,7 +15,6 @@ import net.frontlinesms.plugins.forms.data.domain.FormResponse;
 import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
 import net.frontlinesms.plugins.forms.data.repository.FormDao;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
-import net.frontlinesms.plugins.forms.request.NewFormRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -47,12 +34,6 @@ public class HibernateFormResponseDaoTest extends HibernateTestCase {
 	private FormDao formDao;
 	@Autowired
 	private FormResponseDao formResponseDao;
-	@Autowired
-	private GroupDao groupDao;
-	@Autowired
-	private ContactDao contactDao;
-	@Autowired
-	private GroupMembershipDao groupMembershipDao;
 
 //> TEST METHODS
 	public void testGetFormResponses() {
@@ -383,23 +364,5 @@ public class HibernateFormResponseDaoTest extends HibernateTestCase {
 	@Required
 	public void setFormResponseDao(FormResponseDao formResponseDao) {
 		this.formResponseDao = formResponseDao;
-	}
-	
-	/** @param groupDao The DAO to use for the test. */
-	@Required
-	public void setGroupDao(GroupDao groupDao) {
-		this.groupDao = groupDao;
-	}
-
-	/** @param contactDao The DAO to use for the test. */
-	@Required
-	public void setContactDao(ContactDao contactDao) {
-		this.contactDao = contactDao;
-	}
-	
-	/** @param groupMembershipDao The DAO to use for the test. */
-	@Required
-	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
-		this.groupMembershipDao = groupMembershipDao;
 	}
 }
