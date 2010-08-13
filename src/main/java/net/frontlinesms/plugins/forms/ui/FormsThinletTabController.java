@@ -12,6 +12,7 @@ import java.util.List;
 
 import thinlet.Thinlet;
 
+import net.frontlinesms.FrontlineSMSConstants;
 import net.frontlinesms.csv.CsvExporter;
 import net.frontlinesms.data.domain.Contact;
 import net.frontlinesms.data.domain.Group;
@@ -25,6 +26,7 @@ import net.frontlinesms.plugins.forms.data.domain.*;
 import net.frontlinesms.plugins.forms.data.repository.*;
 import net.frontlinesms.plugins.forms.ui.components.*;
 import net.frontlinesms.plugins.BasePluginThinletTabController;
+import net.frontlinesms.ui.FileChooser;
 import net.frontlinesms.ui.Icon;
 import net.frontlinesms.ui.UiGeneratorController;
 import net.frontlinesms.ui.events.TabChangedNotification;
@@ -64,6 +66,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String I18N_KEY_CONFIRM_FINALISE = "plugins.forms.send.finalise.confirm";
 	/** i18n key: "There are no contacts to notify." */
 	private static final String I18N_KEY_NO_CONTACTS_TO_NOTIFY = "plugins.forms.send.nocontacts";
+	private static final String I18N_KEY_SET_GROUP_BEFORE = "plugins.forms.set.group.before";
 	/** i18n key: "Form submitter" */
 	public static final String I18N_FORM_SUBMITTER = "plugins.forms.submitter";
 	/** i18n key: "Your form 'formname' has been sent to N contacts." */
@@ -81,6 +84,10 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public static final String I18N_FCOMP_TIME = "common.time";
 	public static final String I18N_FCOMP_TRUNCATED_TEXT = "plugins.forms.field.truncatedtext";
 	public static final String I18N_FCOMP_WRAPPED_TEXT = "plugins.forms.field.wrappedtext";
+	
+	private static final String I18N_PLUGINS_FORMS_NOT_SET = "plugins.forms.not.set";
+	private static final String I18N_PLUGINS_FORMS_GROUP = "plugins.forms.group";
+	private static final String I18N_PLUGINS_FORMS_CHOOSE_GROUP = "plugins.forms.choose.group";
 
 	public static final String COMMON_PALETTE = "plugins.forms.palette";
 	public static final String COMMON_PREVIEW = "plugins.forms.preview";
@@ -97,7 +104,6 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	private static final String MESSAGE_EXPORT_TASK_FAILED = "message.export.failed";
 	private static final String MESSAGE_BAD_DIRECTORY = "message.bad.directory";
 	private static final String MESSAGE_CONFIRM_FILE_OVERWRITE = "message.file.overwrite.confirm";
-	private static final String I18N_KEY_SET_GROUP_BEFORE = "plugins.forms.set.group.before";
 	
 	private static final Object UI_FORM_TAB_NAME = ":forms";
 	
@@ -164,7 +170,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 	public void showSaveModeFileChooser (Object textFieldToBeSet) {
-		this.ui.showSaveModeFileChooser(textFieldToBeSet);
+		this.ui.showFileChooser(textFieldToBeSet);
 	}
 	
 	/** Show the AWT Forms Editor window */
@@ -250,7 +256,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 			ui.removeAll(pnRight);
 		}
 
-		formsTab_enabledFields();
+		enableMenuOptions(find("formsList_toolbar"));
 	}
 	
 	/**
@@ -279,10 +285,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Form selectedForm = getSelectedForm();
 		log.info("FormsThinletTabController.showGroupSelecter() : " + selectedForm);
 		if(selectedForm != null) {
-			// FIXME i18n
-//			ui.showGroupSelecter(selectedForm, false, "Choose a group", "setSelectedGroup(groupSelecter, groupSelecter_groupList)", this);
 			GroupSelecterDialog selecter = new GroupSelecterDialog(ui, this);
-			selecter.init("Choose a group", ui.getRootGroup());
+			selecter.init(InternationalisationUtils.getI18NString(I18N_PLUGINS_FORMS_CHOOSE_GROUP), ui.getRootGroup());
 			selecter.show();
 		}
 	}
@@ -434,9 +438,9 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	}
 	
 	/** Form selection has changed, so decide which toolbar and popup options should be available considering the current selection. */
-	public void formsTab_enabledFields() {
-		enableMenuOptions(find("formsList_toolbar"));
-		enableMenuOptions(find("formsList_popupMenu"));
+	public void formsTab_enabledFields(Object formsList_toolbar, Object formsList_popupMenu) {
+		enableMenuOptions(formsList_toolbar);
+		enableMenuOptions(formsList_popupMenu);
 	}
 	
 	/**
@@ -449,17 +453,22 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 		Form selectedForm = getForm(selectedComponent);
 		for (Object o : ui.getItems(menuComponent)) {
 			String name = ui.getName(o);
-			if(name != null) { 
-				if (name.contains("Delete")) {
-					// Tricky to remove the component for a form when the field is selected.  If someone wants to
-					// solve that, they're welcome to enable delete here for FormFields
-					ui.setEnabled(o, ui.getAttachedObject(selectedComponent) instanceof Form);
-				} else if (name.contains("Edit")) {
-					ui.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
-				} else if (name.contains("New")) {
-					ui.setEnabled(o, true);
+			if(name != null) {
+				if (ui.getItems(getFormsList()).length == 0) {
+					ui.setVisible(o, (!name.startsWith("mi") && !name.startsWith("sp")) || name.endsWith("New"));
 				} else {
-					ui.setEnabled(o, selectedForm != null);
+					ui.setVisible(o, true);
+					if (name.contains("Delete")) {
+						// Tricky to remove the component for a form when the field is selected.  If someone wants to
+						// solve that, they're welcome to enable delete here for FormFields
+						ui.setEnabled(o, ui.getAttachedObject(selectedComponent) instanceof Form);
+					} else if (name.contains("Edit")) {
+						ui.setEnabled(o, selectedForm != null && !selectedForm.isFinalised());
+					} else if (name.contains("New")) {
+						ui.setEnabled(o, true);
+					} else {
+						ui.setEnabled(o, selectedForm != null);
+					}
 				}
 			}
 		}
@@ -639,10 +648,8 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 
 		// Create a node showing the group for this form
 		Group g = form.getPermittedGroup();
-		// FIXME i18n
-		String groupName = g == null ? "(not set)" : g.getName();
-		// FIXME i18n
-		Object groupNode = ui.createNode("Group: " + groupName, null);
+		String groupName = g == null ? InternationalisationUtils.getI18NString(I18N_PLUGINS_FORMS_NOT_SET) : g.getName();
+		Object groupNode = ui.createNode(InternationalisationUtils.getI18NString(I18N_PLUGINS_FORMS_GROUP, groupName), null);
 		ui.setIcon(groupNode, Icon.GROUP);
 		ui.add(node, groupNode);
 		

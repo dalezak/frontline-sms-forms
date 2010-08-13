@@ -6,7 +6,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import net.frontlinesms.data.domain.Group;
 
@@ -27,7 +36,6 @@ public class Form implements Serializable {
 	
 //> INSTANCE PROPERTIES
 	/** Unique id for this entity.  This is for hibernate usage. */
-	@SuppressWarnings("unused")
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true,nullable=false,updatable=false)
 	private long id;
@@ -35,7 +43,8 @@ public class Form implements Serializable {
 	/** The name of this form */
 	private String name;
 	/** Fields attached to this form */
-	@OneToMany(fetch=FetchType.EAGER, targetEntity=FormField.class, cascade=CascadeType.ALL)
+	@OneToMany(fetch=FetchType.EAGER, targetEntity=FormField.class, cascade=CascadeType.ALL, mappedBy="form")
+	@OrderBy(value="positionIndex asc")
 	private List<FormField> fields = new ArrayList<FormField>();
 	
 	/** To know if the form has been finalised yet */
@@ -114,6 +123,8 @@ public class Form implements Serializable {
 	 * @param position the position on the form to add the new field at
 	 */
 	public void addField(FormField newField, int position) {
+		newField.setPositionIndex(position);
+		newField.setForm(this);
 		this.fields.add(position, newField);
 	}
 	

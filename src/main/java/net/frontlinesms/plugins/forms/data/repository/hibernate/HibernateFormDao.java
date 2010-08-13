@@ -5,7 +5,6 @@ package net.frontlinesms.plugins.forms.data.repository.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import net.frontlinesms.data.DuplicateKeyException;

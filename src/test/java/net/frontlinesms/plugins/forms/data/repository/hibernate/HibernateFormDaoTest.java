@@ -143,10 +143,6 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 		assertTrue(this.formDao.getFromId(form1.getFormMobileId()).getPermittedGroup() == null);
 		assertTrue(this.formDao.getFromId(form2.getFormMobileId()).getPermittedGroup() == null);
 		assertTrue(this.formDao.getFromId(form3.getFormMobileId()).getPermittedGroup() == null);
-	}		
-	
-	public void testDereferenceMessage() {
-		
 	}
 	
 //> HELPER METHODS
@@ -194,17 +190,5 @@ public class HibernateFormDaoTest extends HibernateTestCase {
 	@Required
 	public void setGroupMembershipDao(GroupMembershipDao groupMembershipDao) {
 		this.groupMembershipDao = groupMembershipDao;
-	}
-	
-	@Override
-	public void doTearDown() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void test() throws Throwable {
-		// TODO Auto-generated method stub
-		
 	}
 }

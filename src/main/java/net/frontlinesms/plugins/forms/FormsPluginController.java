@@ -41,7 +41,7 @@ import org.springframework.context.ApplicationContext;
  * Controller for the FrontlineForms plugin.
  * @author Alex
  */
-@PluginControllerProperties(name="Forms", iconPath="/icons/form.png",
+@PluginControllerProperties(name="Forms", i18nKey="plugins.forms.forms", iconPath="/icons/form.png",
 		springConfigLocation="classpath:net/frontlinesms/plugins/forms/frontlineforms-spring-hibernate.xml",
 		hibernateConfigPath="classpath:net/frontlinesms/plugins/forms/frontlineforms.hibernate.cfg.xml")
 @TextResourceKeyOwner
@@ -52,7 +52,6 @@ public class FormsPluginController extends BasePluginController implements Incom
 	
 	/** I18n Text key: SMS text: "There is a new form available: xyz" */
 	private static final String I18N_NEW_FORMS_SMS = "sms.form.available";
-	
 //> INSTANCE PROPERTIES
 	/** the {@link FrontlineSMS} instance that this plugin is attached to */
 	private FrontlineSMS frontlineController;

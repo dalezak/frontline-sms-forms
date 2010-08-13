@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <dialog closable="true" bottom="5" close="removeDialog" columns="3" font="bold" gap="5" icon="/icons/about.png" left="5" modal="true" right="5" text="i18n.plugins.forms.about" top="5">
     <panel bottom="5" columns="2" gap="10" left="5" right="5" top="5">
-    	<label text="FrontlineForms plugin." colspan="2"/>
+    	<label text="i18n.plugins.forms.plugin.name" colspan="2"/>
     
-    	<label text="Plugin version:"/><label name="plugin.forms.plugin.version"/>
-    	<label text="Handler:"/><label name="plugin.forms.handler.class"/>
-    	<label text="Handler version:"/><label name="plugin.forms.handler.version"/>
+    	<label text="i18n.plugins.forms.plugin.version"/><label name="plugin.forms.plugin.version"/>
+    	<label text="i18n.plugins.forms.plugin.handler"/><label name="plugin.forms.handler.class"/>
+    	<label text="i18n.plugins.forms.plugin.handler.version"/><label name="plugin.forms.handler.version"/>
     	
     	<button icon="/icons/phone.png" type="link" text="i18n.plugins.forms.download.forms.application" tooltip="http://forms.frontlinesms.com" action="openBrowser(this.tooltip)" colspan="2" halign="left"/>
     	<button text="i18n.plugins.forms.originally.masabi" type="link" tooltip="http://www.masabi.com" action="openBrowser(this.tooltip)" colspan="2" halign="right"/>
