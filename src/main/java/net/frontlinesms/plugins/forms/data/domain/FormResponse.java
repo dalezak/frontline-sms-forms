@@ -23,7 +23,7 @@ public class FormResponse implements Serializable {
 	@SuppressWarnings("unused")
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true,nullable=false,updatable=false)
-	public long id;
+	private long id;
 	
 	/** The form that this object is a response to. */
 	@ManyToOne(fetch=FetchType.LAZY)
