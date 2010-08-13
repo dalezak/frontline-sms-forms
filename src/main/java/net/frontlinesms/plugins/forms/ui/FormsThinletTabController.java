@@ -477,7 +477,7 @@ public class FormsThinletTabController extends BasePluginThinletTabController<Fo
 	public PagedListDetails getListDetails(Object list, int startIndex, int limit) {
 		Form selectedForm = getSelectedForm();
 		int totalItemCount = this.formResponseDao.getFormResponseCount(selectedForm);
-
+		
 		ArrayList<Object> responseRows = new ArrayList<Object>();
 		for (FormResponse response : formResponseDao.getFormResponses(selectedForm, startIndex, limit)) {
 			Object row = getRow(response);

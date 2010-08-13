@@ -15,7 +15,10 @@ import net.frontlinesms.events.EventBus;
 import net.frontlinesms.events.EventObserver;
 import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.data.domain.Form;
+import net.frontlinesms.plugins.forms.data.domain.FormField;
+import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
 import net.frontlinesms.plugins.forms.data.domain.FormResponse;
+import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 
 /**
@@ -43,9 +46,21 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 
 	/** @see FormResponseDao#getFormResponses(Form, int, int) */
 	public List<FormResponse> getFormResponses(Form form, int startIndex, int limit) {
-		DetachedCriteria criteria = super.getCriterion();
-		criteria.add(Restrictions.eq(FormResponse.FIELD_FORM, form));
-		return super.getList(criteria, startIndex, limit);
+		// TODO please write a unit test to demonstrate the working code working and the non-working
+		// code NOT working.  This has proved difficult so far.  However, we (i.e. Morgan ;) worked
+		// out what is wrong with the non-working code - it's returning <limit> objects rather than
+		// <limit> FormResponses - it's counting the ResponseValue objects as well as the FormResponses.
+		// Why?  Not sure.  Does it behave this way in the unit tests?  Nope.  )¬;
+		
+		// THIS DOES NOT WORK
+//		DetachedCriteria criteria = super.getCriterion();
+//		criteria.add(Restrictions.eq(FormResponse.FIELD_FORM, form));
+//		return super.getList(criteria, startIndex, limit);
+		
+		// THIS WORKS:
+		String selectString = "SELECT fr FROM " + FormResponse.class.getName() + " fr " +
+				"WHERE " + FormResponse.FIELD_FORM + "=?";
+		return super.getList(selectString, startIndex, limit, form);
 	}
 
 	/** @see FormResponseDao#saveResponse(FormResponse) */

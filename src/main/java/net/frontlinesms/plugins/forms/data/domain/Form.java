@@ -2,7 +2,6 @@ package net.frontlinesms.plugins.forms.data.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +20,9 @@ import net.frontlinesms.data.domain.Group;
 
 /**
  * A form for filling in with data.
- * @author Alex
+ * @author Alex Anderson <alex@frontlinesms.com>
+ * @author Morgan Belkadi <morgan@frontlinesms.com>
+ * @author Dieterich Lawson <dieterich@medic.frontlinesms.com>
  */
 @SuppressWarnings("serial")
 @Entity
@@ -77,7 +78,7 @@ public class Form implements Serializable {
 	}
 
 	/** @return {@link #fields} */
-	public Collection<FormField> getFields() {
+	public List<FormField> getFields() {
 		return Collections.unmodifiableList(this.fields);
 	}
 	

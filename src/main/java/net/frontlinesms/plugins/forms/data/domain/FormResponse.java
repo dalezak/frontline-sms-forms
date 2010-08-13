@@ -62,9 +62,4 @@ public class FormResponse implements Serializable {
 	public String getSubmitter() {
 		return this.senderMsisdn;
 	}
-	
-	/** @return {@link #parentForm} */
-	public Form getParentForm() {
-		return parentForm;
-	}
 }
