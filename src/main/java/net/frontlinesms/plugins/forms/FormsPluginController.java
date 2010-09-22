@@ -256,4 +256,12 @@ public class FormsPluginController extends BasePluginController implements Incom
 	public FormDao getFormDao() {
 		return formDao;
 	}
+	
+	/**
+	 * Get {@link #formResponseDao}
+	 * @return FormResponseDao
+	 */
+	public FormResponseDao getFormResponseDao() {
+		return formResponseDao;
+	}
 }
