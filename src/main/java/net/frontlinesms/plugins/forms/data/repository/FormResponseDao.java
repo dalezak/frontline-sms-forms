@@ -23,6 +23,12 @@ public interface FormResponseDao {
 	public List<FormResponse> getFormResponses(Form form, int startIndex, int limit);
 
 	/**
+	 * Get all form responses
+	 * @return list of responses submitted
+	 */
+	public List<FormResponse> getAllFormResponses();
+	
+	/**
 	 * Gets the number of responses submitted for a form.
 	 * @param form 
 	 * @return number of responses submitted
@@ -36,4 +42,6 @@ public interface FormResponseDao {
 	public void saveResponse(FormResponse formResponse);
 
 	public void delete(FormResponse responseOne);
+	
+	public FormResponse getFormResponse(long id);
 }

@@ -15,10 +15,7 @@ import net.frontlinesms.events.EventBus;
 import net.frontlinesms.events.EventObserver;
 import net.frontlinesms.events.FrontlineEventNotification;
 import net.frontlinesms.plugins.forms.data.domain.Form;
-import net.frontlinesms.plugins.forms.data.domain.FormField;
-import net.frontlinesms.plugins.forms.data.domain.FormFieldType;
 import net.frontlinesms.plugins.forms.data.domain.FormResponse;
-import net.frontlinesms.plugins.forms.data.domain.ResponseValue;
 import net.frontlinesms.plugins.forms.data.repository.FormResponseDao;
 
 /**
@@ -62,6 +59,14 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 				"WHERE " + FormResponse.FIELD_FORM + "=?";
 		return super.getList(selectString, startIndex, limit, form);
 	}
+	
+	/**
+	 * Get all form responses
+	 * @return list of responses submitted
+	 */
+	public List<FormResponse> getAllFormResponses() {
+		return super.getAll();
+	}
 
 	/** @see FormResponseDao#saveResponse(FormResponse) */
 	public void saveResponse(FormResponse formResponse) {
@@ -93,5 +98,11 @@ public class HibernateFormResponseDao extends BaseHibernateDao<FormResponse> imp
 
 	public void delete(FormResponse formResponse) {
 		super.delete(formResponse);
+	}
+	
+	public FormResponse getFormResponse(long id) {
+		DetachedCriteria criteria = super.getCriterion();
+		criteria.add(Restrictions.idEq(id));
+		return super.getUnique(criteria); 
 	}
 }

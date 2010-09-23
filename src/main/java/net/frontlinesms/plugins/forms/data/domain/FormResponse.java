@@ -20,7 +20,6 @@ public class FormResponse implements Serializable {
 
 //> INSTANCE PROPERTIES
 	/** Unique id for this entity.  This is for hibernate usage. */
-	@SuppressWarnings("unused")
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true,nullable=false,updatable=false)
 	private long id;
@@ -53,6 +52,11 @@ public class FormResponse implements Serializable {
 	}
 	
 //> ACCESSOR METHODS
+	/** @return {@link #id} */
+	public long getId() {
+		return id;
+	}
+	
 	/** @return {@link #results} */
 	public List<ResponseValue> getResults() {
 		return this.results;
